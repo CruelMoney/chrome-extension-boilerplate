@@ -1,4 +1,5 @@
 import React from "react";
+import ConnectBackend from "../../ConnectBackend";
 
 export default class Index extends React.Component {
   constructor(props) {
@@ -6,10 +7,12 @@ export default class Index extends React.Component {
   }
   render() {
     return (
-      <div style={styles.sideBar}>
-        Hi from content script
-        <LeavePartyButton />
-      </div>
+      <ConnectBackend>
+        <div style={styles.sideBar}>
+          Hi from content script
+          <LeavePartyButton />
+        </div>
+      </ConnectBackend>
     );
   }
 }

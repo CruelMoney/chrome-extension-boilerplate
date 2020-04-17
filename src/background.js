@@ -47,8 +47,7 @@ const onPartyStarted = ({ payload, sendResponse }) => {
   chrome.tabs.executeScript({
     file: "content_script.bundle.js",
   });
-
-  sendResponse(true);
+  sendResponse && sendResponse(true);
 };
 
 const onLeaveParty = ({ payload, sendResponse }) => {
@@ -76,12 +75,11 @@ chrome.runtime.onMessage.addListener(function (
 // on loading tab
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   if (changeInfo.status == "complete" && tab.active) {
-    const playlistId = null;
+    const url = new URL(tab.url);
+    const playlistId = url.searchParams.get("playlistPartyId");
 
     if (playlistId) {
-      chrome.tabs.executeScript({
-        file: "content_script.bundle.js",
-      });
+      onPartyStarted({ payload: playlistId });
     } else {
       chrome.storage.local.get(["party"], function (result) {
         if (result?.party) {
