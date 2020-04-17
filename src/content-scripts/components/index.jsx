@@ -3,6 +3,7 @@ import ConnectBackend from "../../ConnectBackend";
 import { useMutation, useSubscription } from "@apollo/client";
 import { JOIN_PARTY, PLAYLIST_UPDATED } from "../../gql";
 import useAdminActions from "./useAdminActions";
+import useGuestActions from "./useGuestActions";
 
 export default class Index extends React.Component {
   constructor(props) {
@@ -19,15 +20,10 @@ export default class Index extends React.Component {
 
 const DataWrapper = () => {
   const [party, setParty] = useState();
-  const [initAdmin] = useAdminActions();
 
   useEffect(() => {
     chrome.storage.local.get(["party"], function (result) {
       setParty(result.party);
-
-      if (result?.party?.admin) {
-        initAdmin({ partyId: result.party.id });
-      }
     });
   }, []);
 
@@ -43,37 +39,31 @@ const InnerContent = ({ party }) => {
   const { data: subscriptionData, error } = useSubscription(PLAYLIST_UPDATED, {
     variables: { id: party.id },
   });
-
   const data = {
+    ...party,
     ...queryData?.joinParty,
     ...subscriptionData?.playlistUpdated,
   };
   const {
     tracks = [],
     id,
+    url,
     currentIndex,
     currentSongStartedTimestamp,
     currentSongPlaybackSecond,
   } = data;
 
+  useAdminActions({ party: data });
+  useGuestActions({ party: data });
   useEffect(() => {
     join({ variables: { id: party.id } });
   }, []);
-
-  useEffect(() => {
-    if (id) {
-      const track = tracks[currentIndex];
-      if (track && window.location.href !== track.url) {
-        window.location.href = track.url;
-      }
-    }
-  }, [currentIndex, id]);
 
   return (
     <div style={styles.sideBar}>
       Hi from content script
       {id && <LeavePartyButton />}
-      <h3>{id}</h3>
+      <h3>{url}</h3>
       <h3>{currentIndex}</h3>
       <h3>{currentSongStartedTimestamp}</h3>
       <h3>{currentSongPlaybackSecond}</h3>
