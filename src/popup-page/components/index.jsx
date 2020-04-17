@@ -10,18 +10,33 @@ export default class Index extends React.Component {
   render() {
     return (
       <ConnectBackend>
-        <div style={styles.container}>
-          <h1>Create a YouTube Party</h1>
-          <CreatePartyButton />
-        </div>
+        <InnerContent />
       </ConnectBackend>
     );
   }
 }
 
-const CreatePartyButton = () => {
+const InnerContent = () => {
+  const [party, setParty] = useState();
+
+  useEffect(() => {
+    chrome.storage.local.get(["party"], function (result) {
+      setParty(result?.party);
+    });
+  }, []);
+
+  return (
+    <div style={styles.container}>
+      <h1>Create a YouTube Party</h1>
+      <CreatePartyButton party={party} />
+    </div>
+  );
+};
+
+const CreatePartyButton = ({ party }) => {
   const [mutate, { data }] = useMutation(START_PARTY);
-  const partyUrl = data?.startParty?.url;
+
+  const partyUrl = data?.startParty?.url || party?.url;
 
   if (partyUrl) {
     return <input value={partyUrl}></input>;
@@ -34,12 +49,12 @@ const CreatePartyButton = () => {
       var activeTab = tabs[0];
 
       const { data } = await mutate({ variables: { url: activeTab?.url } });
-      const id = data?.startParty?.id;
+      const { id, url } = data?.startParty || {};
 
       if (id) {
         chrome.runtime.sendMessage({
           type: "PARTY_STARTED",
-          payload: { id, admin: true },
+          payload: { id, admin: true, url },
         });
       }
     });
