@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ConnectBackend from "../../ConnectBackend";
+import { useMutation } from "@apollo/client";
+import { JOIN_PARTY } from "../../gql";
 
 export default class Index extends React.Component {
   constructor(props) {
@@ -11,6 +13,7 @@ export default class Index extends React.Component {
         <div style={styles.sideBar}>
           Hi from content script
           <LeavePartyButton />
+          <Tracks />
         </div>
       </ConnectBackend>
     );
@@ -26,6 +29,30 @@ const LeavePartyButton = () => {
   };
 
   return <button onClick={leaveParty}>Leave party</button>;
+};
+
+const Tracks = () => {
+  const [join, { data, error }] = useMutation(JOIN_PARTY);
+
+  useEffect(() => {
+    chrome.storage.local.get(["party"], function (result) {
+      join({ variables: { id: result.party } });
+    });
+  }, []);
+
+  const { tracks = [], id } = data?.joinParty || {};
+
+  return (
+    <div>
+      <h2>Tracks</h2>
+      <h3>{id}</h3>
+      <ul>
+        {tracks.map((t, idx) => (
+          <li key={idx}>{t.url}</li>
+        ))}
+      </ul>
+    </div>
+  );
 };
 
 const styles = {

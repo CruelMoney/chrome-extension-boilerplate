@@ -8,3 +8,18 @@ export const START_PARTY = gql`
     }
   }
 `;
+
+export const JOIN_PARTY = gql`
+  mutation JoinParty($id: ID!) {
+    joinParty(id: $id) {
+      id
+      url
+      currentSecond
+      currentIndex
+      tracks {
+        url
+        votes
+      }
+    }
+  }
+`;
