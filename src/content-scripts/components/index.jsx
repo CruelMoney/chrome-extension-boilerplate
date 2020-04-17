@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import ConnectBackend from "../../ConnectBackend";
-import { useMutation } from "@apollo/client";
+import { useMutation, useSubscription } from "@apollo/client";
 import { JOIN_PARTY } from "../../gql";
 
 export default class Index extends React.Component {
@@ -10,15 +10,29 @@ export default class Index extends React.Component {
   render() {
     return (
       <ConnectBackend>
-        <div style={styles.sideBar}>
-          Hi from content script
-          <LeavePartyButton />
-          <Tracks />
-        </div>
+        <InnerContent />
       </ConnectBackend>
     );
   }
 }
+
+const InnerContent = () => {
+  const [party, setParty] = useState();
+
+  useEffect(() => {
+    chrome.storage.local.get(["party"], function (result) {
+      setParty(result.party);
+    });
+  }, []);
+
+  return (
+    <div style={styles.sideBar}>
+      Hi from content script
+      {party && <LeavePartyButton party={party} />}
+      {party && <Tracks party={party} />}
+    </div>
+  );
+};
 
 const LeavePartyButton = () => {
   const leaveParty = () => {
@@ -31,14 +45,13 @@ const LeavePartyButton = () => {
   return <button onClick={leaveParty}>Leave party</button>;
 };
 
-const Tracks = () => {
+const Tracks = ({ party }) => {
   const [join, { data, error }] = useMutation(JOIN_PARTY);
+
   const { tracks = [], id, currentIndex } = data?.joinParty || {};
 
   useEffect(() => {
-    chrome.storage.local.get(["party"], function (result) {
-      join({ variables: { id: result.party } });
-    });
+    join({ variables: { id: party } });
   }, []);
 
   useEffect(() => {
