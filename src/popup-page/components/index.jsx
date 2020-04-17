@@ -28,22 +28,21 @@ const CreatePartyButton = () => {
   }
 
   const startParty = async () => {
-    const url = document.location.href;
+    chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
+      // since only one tab should be active and in the current window at once
+      // the return variable should only have one entry
+      var activeTab = tabs[0];
 
-    const { data } = await mutate({ variables: { url } });
-    const id = data?.startParty?.id;
+      const { data } = await mutate({ variables: { url: activeTab?.url } });
+      const id = data?.startParty?.id;
 
-    if (id) {
-      chrome.runtime.sendMessage(
-        {
+      if (id) {
+        chrome.runtime.sendMessage({
           type: "PARTY_STARTED",
           payload: id,
-        },
-        function (response) {
-          console.log(response);
-        }
-      );
-    }
+        });
+      }
+    });
   };
 
   return <button onClick={startParty}>Start the party</button>;
