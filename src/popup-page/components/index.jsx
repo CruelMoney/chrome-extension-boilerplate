@@ -6,8 +6,8 @@ export default class Index extends React.Component {
   }
   render() {
     return (
-      <div>
-        <h1>YouTube Party Playlist</h1>
+      <div style={styles.container}>
+        <h1>Create a YouTube Party</h1>
         <ChangeColorButton />
       </div>
     );
@@ -23,5 +23,13 @@ const ChangeColorButton = () => {
     });
   };
 
-  return <button onClick={change}>Change color</button>;
+  return <button onClick={change}>Start the party</button>;
+};
+
+const styles = {
+  container: {
+    padding: "15px",
+    height: "500px",
+    width: "375px",
+  },
 };
