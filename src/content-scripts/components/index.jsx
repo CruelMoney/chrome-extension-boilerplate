@@ -51,7 +51,7 @@ const Tracks = ({ party }) => {
   const { tracks = [], id, currentIndex } = data?.joinParty || {};
 
   useEffect(() => {
-    join({ variables: { id: party } });
+    join({ variables: { id: party.id } });
   }, []);
 
   useEffect(() => {

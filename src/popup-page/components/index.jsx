@@ -39,7 +39,7 @@ const CreatePartyButton = () => {
       if (id) {
         chrome.runtime.sendMessage({
           type: "PARTY_STARTED",
-          payload: id,
+          payload: { id, admin: true },
         });
       }
     });

@@ -80,7 +80,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
       const playlistId = url.searchParams.get("playlistPartyId");
 
       if (playlistId) {
-        onPartyStarted({ payload: playlistId });
+        onPartyStarted({ payload: { id: playlistId } });
       } else {
         chrome.storage.local.get(["party"], function (result) {
           if (result?.party) {
