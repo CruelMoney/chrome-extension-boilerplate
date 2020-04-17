@@ -1,6 +1,6 @@
 {
-  "name": "chrome-extension-boilerplate",
-  "version": "0.0.1",
+  "name": "youtube-playlist-party",
+  "version": "1.0",
   "manifest_version": 2,
   "description": "description",
   "icons": {
