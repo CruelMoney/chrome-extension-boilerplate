@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import ConnectBackend from "../ConnectBackend";
+import ConnectBackend from "../../ConnectBackend";
 import { useMutation } from "@apollo/client";
 import { START_PARTY } from "../../gql";
 
@@ -28,7 +28,23 @@ const CreatePartyButton = () => {
     return <input value={url}></input>;
   }
 
-  return <button onClick={mutate}>Start the party</button>;
+  const startParty = async () => {
+    const { data } = await mutate();
+    const id = data?.startParty?.id;
+    if (id) {
+      chrome.runtime.sendMessage(
+        {
+          type: "PARTY_STARTED",
+          payload: id,
+        },
+        function (response) {
+          console.log(response);
+        }
+      );
+    }
+  };
+
+  return <button onClick={startParty}>Start the party</button>;
 };
 
 const styles = {

@@ -26,6 +26,7 @@ class Main {
    */
   toggleApp = () => {
     AppInitState = AppInitState ? 0 : 1;
+
     return AppInitState;
   };
 
@@ -39,3 +40,57 @@ class Main {
     AppInitState = 0;
   };
 }
+
+const onPartyStarted = ({ payload, sendResponse }) => {
+  chrome.storage.local.set({ party: payload });
+
+  chrome.tabs.executeScript({
+    file: "content_script.bundle.js",
+  });
+
+  sendResponse(true);
+};
+
+const onLeaveParty = ({ payload, sendResponse }) => {
+  chrome.storage.local.remove("party");
+
+  sendResponse(true);
+};
+
+const MESSAGE_HANDLERS = {
+  PARTY_STARTED: onPartyStarted,
+  LEAVE_PARTY: onLeaveParty,
+};
+
+chrome.runtime.onMessage.addListener(function (
+  { type, payload },
+  sender,
+  sendResponse
+) {
+  const fun = MESSAGE_HANDLERS[type];
+  if (fun) {
+    fun({ payload, sendResponse });
+  }
+});
+
+// on loading tab
+chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+  if (changeInfo.status == "complete" && tab.active) {
+    const playlistId = null;
+
+    if (playlistId) {
+      chrome.tabs.executeScript({
+        file: "content_script.bundle.js",
+      });
+    } else {
+      chrome.storage.local.get(["party"], function (result) {
+        if (result?.party) {
+          // start content script when page is loaded and we have a party
+          chrome.tabs.executeScript({
+            file: "content_script.bundle.js",
+          });
+        }
+      });
+    }
+  }
+});
