@@ -76,19 +76,21 @@ chrome.runtime.onMessage.addListener(function (
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   if (changeInfo.status == "complete" && tab.active) {
     const url = new URL(tab.url);
-    const playlistId = url.searchParams.get("playlistPartyId");
+    if (url.host.includes("youtube")) {
+      const playlistId = url.searchParams.get("playlistPartyId");
 
-    if (playlistId) {
-      onPartyStarted({ payload: playlistId });
-    } else {
-      chrome.storage.local.get(["party"], function (result) {
-        if (result?.party) {
-          // start content script when page is loaded and we have a party
-          chrome.tabs.executeScript({
-            file: "content_script.bundle.js",
-          });
-        }
-      });
+      if (playlistId) {
+        onPartyStarted({ payload: playlistId });
+      } else {
+        chrome.storage.local.get(["party"], function (result) {
+          if (result?.party) {
+            // start content script when page is loaded and we have a party
+            chrome.tabs.executeScript({
+              file: "content_script.bundle.js",
+            });
+          }
+        });
+      }
     }
   }
 });

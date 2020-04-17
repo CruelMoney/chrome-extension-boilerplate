@@ -33,6 +33,7 @@ const LeavePartyButton = () => {
 
 const Tracks = () => {
   const [join, { data, error }] = useMutation(JOIN_PARTY);
+  const { tracks = [], id, currentIndex } = data?.joinParty || {};
 
   useEffect(() => {
     chrome.storage.local.get(["party"], function (result) {
@@ -40,7 +41,14 @@ const Tracks = () => {
     });
   }, []);
 
-  const { tracks = [], id } = data?.joinParty || {};
+  useEffect(() => {
+    if (id) {
+      const track = tracks[currentIndex];
+      if (window.location.href !== track.url) {
+        window.location.href = track.url;
+      }
+    }
+  }, [currentIndex, id]);
 
   return (
     <div>
