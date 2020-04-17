@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import ConnectBackend from "../../ConnectBackend";
 import { useMutation } from "@apollo/client";
 import { START_PARTY } from "../../gql";
@@ -21,16 +21,18 @@ export default class Index extends React.Component {
 
 const CreatePartyButton = () => {
   const [mutate, { data }] = useMutation(START_PARTY);
+  const partyUrl = data?.startParty?.url;
 
-  const url = data?.startParty?.url;
-
-  if (url) {
-    return <input value={url}></input>;
+  if (partyUrl) {
+    return <input value={partyUrl}></input>;
   }
 
   const startParty = async () => {
-    const { data } = await mutate();
+    const url = document.location.href;
+
+    const { data } = await mutate({ variables: { url } });
     const id = data?.startParty?.id;
+
     if (id) {
       chrome.runtime.sendMessage(
         {
