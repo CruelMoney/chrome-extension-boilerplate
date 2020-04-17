@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ConnectBackend from "../ConnectBackend";
+import { useMutation } from "@apollo/client";
+import { START_PARTY } from "../../gql";
 
 export default class Index extends React.Component {
   constructor(props) {
@@ -10,23 +12,23 @@ export default class Index extends React.Component {
       <ConnectBackend>
         <div style={styles.container}>
           <h1>Create a YouTube Party</h1>
-          <ChangeColorButton />
+          <CreatePartyButton />
         </div>
       </ConnectBackend>
     );
   }
 }
 
-const ChangeColorButton = () => {
-  const change = () => {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      chrome.tabs.executeScript(tabs[0].id, {
-        code: 'document.body.style.backgroundColor = "red";',
-      });
-    });
-  };
+const CreatePartyButton = () => {
+  const [mutate, { data }] = useMutation(START_PARTY);
 
-  return <button onClick={change}>Start the party</button>;
+  const url = data?.startParty?.url;
+
+  if (url) {
+    return <input value={url}></input>;
+  }
+
+  return <button onClick={mutate}>Start the party</button>;
 };
 
 const styles = {
