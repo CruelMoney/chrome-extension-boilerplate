@@ -58,7 +58,6 @@
     "graphql": "^15.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "styled-components": "^5.1.0",
     "subscriptions-transport-ws": "^0.9.16"
   }
 }
