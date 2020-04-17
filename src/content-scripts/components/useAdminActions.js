@@ -9,7 +9,7 @@ const useAdminActions = ({ party }) => {
   useEffect(() => {
     if (admin && id) {
       const video = document.querySelector("video");
-      video.addEventListener("seeked", (event) => {
+      const updatePlayerState = () => {
         const currentSongStartedTimestamp = new Date().getTime();
         const currentSongPlaybackSecond = parseInt(video.currentTime);
 
@@ -20,7 +20,13 @@ const useAdminActions = ({ party }) => {
             currentSongPlaybackSecond,
           },
         });
-      });
+      };
+
+      video.addEventListener("seeked", updatePlayerState);
+
+      return () => {
+        video.removeEventListener("seeked", updatePlayerState);
+      };
     }
   }, [id, admin]);
 };
