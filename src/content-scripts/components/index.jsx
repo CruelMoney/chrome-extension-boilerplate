@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import ConnectBackend from "../../ConnectBackend";
 import { useMutation, useSubscription } from "@apollo/client";
-import { JOIN_PARTY } from "../../gql";
+import { JOIN_PARTY, PLAYLIST_UPDATED } from "../../gql";
+import useAdminActions from "./useAdminActions";
 
 export default class Index extends React.Component {
   constructor(props) {
@@ -10,26 +11,73 @@ export default class Index extends React.Component {
   render() {
     return (
       <ConnectBackend>
-        <InnerContent />
+        <DataWrapper />
       </ConnectBackend>
     );
   }
 }
 
-const InnerContent = () => {
+const DataWrapper = () => {
   const [party, setParty] = useState();
+  const [initAdmin] = useAdminActions();
 
   useEffect(() => {
     chrome.storage.local.get(["party"], function (result) {
       setParty(result.party);
+
+      if (result?.party?.admin) {
+        initAdmin({ partyId: result.party.id });
+      }
     });
   }, []);
+
+  if (!party) {
+    return null;
+  }
+
+  return <InnerContent party={party} />;
+};
+
+const InnerContent = ({ party }) => {
+  const [join, { data: queryData }] = useMutation(JOIN_PARTY);
+  const { data: subscriptionData, error } = useSubscription(PLAYLIST_UPDATED, {
+    variables: { id: party.id },
+  });
+
+  const data = {
+    ...queryData?.joinParty,
+    ...subscriptionData?.playlistUpdated,
+  };
+  const {
+    tracks = [],
+    id,
+    currentIndex,
+    currentSongStartedTimestamp,
+    currentSongPlaybackSecond,
+  } = data;
+
+  useEffect(() => {
+    join({ variables: { id: party.id } });
+  }, []);
+
+  useEffect(() => {
+    if (id) {
+      const track = tracks[currentIndex];
+      if (track && window.location.href !== track.url) {
+        window.location.href = track.url;
+      }
+    }
+  }, [currentIndex, id]);
 
   return (
     <div style={styles.sideBar}>
       Hi from content script
-      {party && <LeavePartyButton party={party} />}
-      {party && <Tracks party={party} />}
+      {id && <LeavePartyButton />}
+      <h3>{id}</h3>
+      <h3>{currentIndex}</h3>
+      <h3>{currentSongStartedTimestamp}</h3>
+      <h3>{currentSongPlaybackSecond}</h3>
+      {tracks?.length && <Tracks tracks={tracks} />}
     </div>
   );
 };
@@ -45,28 +93,11 @@ const LeavePartyButton = () => {
   return <button onClick={leaveParty}>Leave party</button>;
 };
 
-const Tracks = ({ party }) => {
-  const [join, { data, error }] = useMutation(JOIN_PARTY);
-
-  const { tracks = [], id, currentIndex } = data?.joinParty || {};
-
-  useEffect(() => {
-    join({ variables: { id: party.id } });
-  }, []);
-
-  useEffect(() => {
-    if (id) {
-      const track = tracks[currentIndex];
-      if (window.location.href !== track.url) {
-        window.location.href = track.url;
-      }
-    }
-  }, [currentIndex, id]);
-
+const Tracks = ({ tracks }) => {
   return (
     <div>
       <h2>Tracks</h2>
-      <h3>{id}</h3>
+
       <ul>
         {tracks.map((t, idx) => (
           <li key={idx}>{t.url}</li>

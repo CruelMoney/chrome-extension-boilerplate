@@ -14,8 +14,49 @@ export const JOIN_PARTY = gql`
     joinParty(id: $id) {
       id
       url
-      currentSecond
       currentIndex
+      currentSongStartedTimestamp
+      currentSongPlaybackSecond
+      tracks {
+        url
+        votes
+      }
+    }
+  }
+`;
+
+export const UPDATE_PLAYLIST = gql`
+  mutation UpdatePlaylist(
+    $id: ID!
+    $currentSongStartedTimestamp: Int!
+    $currentSongPlaybackSecond: Int!
+  ) {
+    updatePlaylistState(
+      id: $id
+      currentSongStartedTimestamp: $currentSongStartedTimestamp
+      currentSongPlaybackSecond: $currentSongPlaybackSecond
+    ) {
+      id
+      url
+      currentIndex
+      currentSongStartedTimestamp
+      currentSongPlaybackSecond
+      tracks {
+        url
+        votes
+      }
+    }
+  }
+`;
+
+export const PLAYLIST_UPDATED = gql`
+  subscription PlaylistUpdated($id: ID!) {
+    playlistUpdated(id: $id) {
+      id
+      url
+      currentIndex
+      currentSongStartedTimestamp
+      currentSongPlaybackSecond
       tracks {
         url
         votes
