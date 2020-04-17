@@ -3,7 +3,6 @@ import { useMutation } from "@apollo/client";
 import { UPDATE_PLAYLIST } from "../../gql";
 
 const useGuestActions = ({ party }) => {
-  const video = document.querySelector("video");
   const {
     tracks = [],
     currentIndex,
@@ -22,9 +21,15 @@ const useGuestActions = ({ party }) => {
 
   // update player to current playback state
   useEffect(() => {
-    if (!admin) {
+    const video = document.querySelector("video");
+
+    if (!admin && video && currentSongStartedTimestamp) {
       // we need to caluclate the current position
-      video.currentTime = 0;
+      const diffSeconds =
+        (new Date().getTime() - currentSongStartedTimestamp) / 1000;
+      const currentPosition = currentSongPlaybackSecond + diffSeconds + 1;
+
+      video.currentTime = currentPosition;
     }
   }, [currentSongPlaybackSecond, currentSongStartedTimestamp, admin]);
 };

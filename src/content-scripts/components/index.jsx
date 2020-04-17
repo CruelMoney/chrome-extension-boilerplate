@@ -44,6 +44,8 @@ const InnerContent = ({ party }) => {
     ...queryData?.joinParty,
     ...subscriptionData?.playlistUpdated,
   };
+  console.log({ data, party, queryData, subscriptionData });
+
   const {
     tracks = [],
     id,
@@ -59,8 +61,6 @@ const InnerContent = ({ party }) => {
   useEffect(() => {
     join({ variables: { id: party.id } });
   }, []);
-
-  console.log({ data });
 
   return (
     <div style={styles.sideBar}>
