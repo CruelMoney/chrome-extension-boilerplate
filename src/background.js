@@ -10,7 +10,7 @@ let AppInitState = 0; // it means app is off on startup
 class Main {
   constructor() {}
   popUpClickSetup() {
-    chrome.browserAction.onClicked.addListener(tab => {
+    chrome.browserAction.onClicked.addListener((tab) => {
       if (this.toggleApp()) {
       } else {
         this.stopApp();
