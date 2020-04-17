@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import ConnectBackend from "../../ConnectBackend";
 
 export default class Index extends React.Component {
   constructor(props) {
@@ -7,19 +8,21 @@ export default class Index extends React.Component {
   }
   render() {
     return (
-      <Popup>
-        <h1>YouTube Party Playlist</h1>
-        <ChangeColorButton />
-      </Popup>
+      <ConnectBackend>
+        <Popup>
+          <h1>YouTube Party Playlist</h1>
+          <ChangeColorButton />
+        </Popup>
+      </ConnectBackend>
     );
   }
 }
 
 const ChangeColorButton = () => {
   const change = () => {
-    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       chrome.tabs.executeScript(tabs[0].id, {
-        code: 'document.body.style.backgroundColor = "red";'
+        code: 'document.body.style.backgroundColor = "red";',
       });
     });
   };
