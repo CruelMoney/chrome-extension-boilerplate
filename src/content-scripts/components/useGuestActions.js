@@ -4,7 +4,13 @@ import { UPDATE_PLAYLIST } from "../../gql";
 
 const useGuestActions = ({ party }) => {
   const video = document.querySelector("video");
-  const { tracks = [], currentIndex } = party || {};
+  const {
+    tracks = [],
+    currentIndex,
+    currentSongStartedTimestamp,
+    currentSongPlaybackSecond,
+    admin,
+  } = party || {};
 
   // redirect to correct song
   useEffect(() => {
@@ -15,9 +21,12 @@ const useGuestActions = ({ party }) => {
   }, [tracks, currentIndex]);
 
   // update player to current playback state
-  const init = () => {};
-
-  return [init];
+  useEffect(() => {
+    if (!admin) {
+      // we need to caluclate the current position
+      video.currentTime = 0;
+    }
+  }, [currentSongPlaybackSecond, currentSongStartedTimestamp, admin]);
 };
 
 export default useGuestActions;

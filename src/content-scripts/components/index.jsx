@@ -51,6 +51,7 @@ const InnerContent = ({ party }) => {
     currentIndex,
     currentSongStartedTimestamp,
     currentSongPlaybackSecond,
+    admin,
   } = data;
 
   useAdminActions({ party: data });
@@ -59,14 +60,17 @@ const InnerContent = ({ party }) => {
     join({ variables: { id: party.id } });
   }, []);
 
+  console.log({ data });
+
   return (
     <div style={styles.sideBar}>
       Hi from content script
       {id && <LeavePartyButton />}
       <h3>{url}</h3>
-      <h3>{currentIndex}</h3>
-      <h3>{currentSongStartedTimestamp}</h3>
-      <h3>{currentSongPlaybackSecond}</h3>
+      <h3>Admin: {admin ? "yes" : "no"}</h3>
+      <h3>Current idx: {currentIndex}</h3>
+      <h3>Current timestamp: {currentSongStartedTimestamp}</h3>
+      <h3>Current seconds: {currentSongPlaybackSecond}</h3>
       {tracks?.length && <Tracks tracks={tracks} />}
     </div>
   );

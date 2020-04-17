@@ -28,7 +28,7 @@ export const JOIN_PARTY = gql`
 export const UPDATE_PLAYLIST = gql`
   mutation UpdatePlaylist(
     $id: ID!
-    $currentSongStartedTimestamp: Int!
+    $currentSongStartedTimestamp: BigInt!
     $currentSongPlaybackSecond: Int!
   ) {
     updatePlaylistState(
