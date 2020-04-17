@@ -2,7 +2,7 @@ import React from "react";
 import {
   ApolloClient,
   InMemoryCache,
-  HttpLink,
+  createHttpLink,
   setContext,
   split,
   ApolloLink,
@@ -13,12 +13,18 @@ import { getMainDefinition } from "@apollo/client/utilities";
 
 import { WebSocketLink } from "@apollo/link-ws";
 
+const isDevelopment = true;
+
 const ConnectBackend = ({ children }) => {
   const cache = new InMemoryCache();
 
-  const protocol = process.env.NODE_ENV === "development" ? "ws://" : "wss://";
-  const domain = environment.GQL_DOMAIN.split("://").pop();
-  const uri = protocol + domain + "/graphql";
+  const domain = "http://localhost:8000";
+
+  const protocol = isDevelopment ? "ws://" : "wss://";
+  const subDomain = domain.split("://").pop();
+  const uri = protocol + subDomain + "/graphql";
+
+  const HttpLink = createHttpLink({ uri: domain });
 
   const wsLink = new WebSocketLink({
     uri,
@@ -46,7 +52,6 @@ const ConnectBackend = ({ children }) => {
     cache,
     link,
     connectToDevTools: true,
-    resolvers,
   });
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;
