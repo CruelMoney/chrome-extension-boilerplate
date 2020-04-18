@@ -1,6 +1,6 @@
 import "@babel/polyfill";
 import { client } from "./ConnectBackend";
-import { JOIN_PARTY } from "./gql";
+import { JOIN_PARTY, PLAYLIST_UPDATED } from "./gql";
 
 let AppInitState = 0; // it means app is off on startup
 
@@ -65,18 +65,29 @@ const onPartyJoined = async ({ playlistId, tabId }) => {
 
   // redirect if we haven't redirected before
   if (party) {
-    const { tracks, currentIndex } = party;
-    const track = tracks[currentIndex];
-
-    if (track) {
-      chrome.tabs.query({ url: track.url }, (tabs) => {
-        if (!tabs.length) {
-          chrome.tabs.update(tabId, { url: track.url });
-        }
-      });
-    }
-
+    handlePartyUpdate(party, tabId);
     showPartyConsole({ tabId });
+    client
+      .subscribe({ query: PLAYLIST_UPDATED, variables: { id: playlistId } })
+      .subscribe({
+        next: ({ data }) => {
+          const party = data?.playlistUpdated;
+          if (party) {
+            handlePartyUpdate(party, tabId);
+          }
+        },
+      });
+  }
+};
+
+const handlePartyUpdate = ({ tracks, currentIndex }, tabId) => {
+  const track = tracks[currentIndex];
+  if (track) {
+    chrome.tabs.query({ url: track.url }, (tabs) => {
+      if (!tabs.length) {
+        chrome.tabs.update(tabId, { url: track.url });
+      }
+    });
   }
 };
 

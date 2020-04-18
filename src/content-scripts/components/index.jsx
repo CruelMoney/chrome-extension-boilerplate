@@ -62,6 +62,9 @@ const InnerContent = ({ party }) => {
     join({ variables: { id: party.id } });
   }, []);
 
+  const currenTrack = tracks[currentIndex];
+  const upcomingTracks = tracks.slice(currentIndex + 1);
+
   return (
     <div style={styles.sideBar}>
       Hi from content script
@@ -72,8 +75,9 @@ const InnerContent = ({ party }) => {
       <h3>Current idx: {currentIndex}</h3>
       <h3>Current timestamp: {currentSongStartedTimestamp}</h3>
       <h3>Current seconds: {currentSongPlaybackSecond}</h3>
-      {tracks?.length && (
-        <Tracks admin={admin} tracks={tracks} playlistId={id} />
+      <CurrentTrack {...currenTrack}></CurrentTrack>
+      {upcomingTracks?.length && (
+        <Tracks admin={admin} tracks={upcomingTracks} playlistId={id} />
       )}
     </div>
   );
@@ -101,7 +105,7 @@ const ReturnToPartyButton = () => {
 const Tracks = ({ tracks, playlistId, admin }) => {
   return (
     <div>
-      <h2>Tracks</h2>
+      <h2>Upcoming tracks</h2>
       <ul>
         {tracks.map((t, idx) => (
           <Track key={idx} playlistId={playlistId} admin={admin} {...t} />
@@ -124,7 +128,19 @@ const Track = ({ playlistId, url, name, admin, ...props }) => {
   );
 };
 
+const CurrentTrack = ({ name }) => {
+  return (
+    <>
+      <h2>Now playing</h2>
+      <p style={styles.nowPlaying}>{name}</p>
+    </>
+  );
+};
+
 const styles = {
+  nowPlaying: {
+    fontSize: "2em",
+  },
   sideBar: {
     position: "fixed",
     right: 0,
