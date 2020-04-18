@@ -20,6 +20,7 @@ export const JOIN_PARTY = gql`
       tracks {
         url
         votes
+        name
       }
     }
   }
@@ -46,6 +47,7 @@ export const UPDATE_PLAYLIST = gql`
       tracks {
         url
         votes
+        name
       }
     }
   }
@@ -62,14 +64,15 @@ export const PLAYLIST_UPDATED = gql`
       tracks {
         url
         votes
+        name
       }
     }
   }
 `;
 
 export const ADD_TRACK = gql`
-  mutation AddTrack($id: ID!, $url: String!) {
-    addTrack(playlistId: $id, url: $url)
+  mutation AddTrack($id: ID!, $url: String!, $name: String) {
+    addTrack(playlistId: $id, url: $url, name: $name)
   }
 `;
 

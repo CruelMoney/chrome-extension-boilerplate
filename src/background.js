@@ -70,8 +70,6 @@ const onPartyJoined = async ({ playlistId, tabId }) => {
 
     if (track) {
       chrome.tabs.query({ url: track.url }, (tabs) => {
-        console.log({ track, tabs });
-
         if (!tabs.length) {
           chrome.tabs.update(tabId, { url: track.url });
         }
@@ -93,14 +91,16 @@ const MESSAGE_HANDLERS = {
 };
 
 chrome.runtime.onMessage.addListener(function (
-  { type, payload },
+  { type, payload, ...rest },
   sender,
   sendResponse
 ) {
   const fun = MESSAGE_HANDLERS[type];
-  if (fun) {
-    fun({ payload, sendResponse, tabId: sender.tab.id });
-  }
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    if (fun) {
+      fun({ payload, sendResponse, tabId: tabs[0].id });
+    }
+  });
 });
 
 // on loading tab

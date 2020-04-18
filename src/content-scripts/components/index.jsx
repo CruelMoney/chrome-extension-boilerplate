@@ -111,14 +111,14 @@ const Tracks = ({ tracks, playlistId, admin }) => {
   );
 };
 
-const Track = ({ playlistId, url, admin, ...props }) => {
+const Track = ({ playlistId, url, name, admin, ...props }) => {
   const [remove] = useMutation(REMOVE_TRACK, {
     variables: { url, id: playlistId },
   });
 
   return (
     <li {...props}>
-      {url}
+      {name || url}
       {admin && <button onClick={remove}>Remove</button>}
     </li>
   );

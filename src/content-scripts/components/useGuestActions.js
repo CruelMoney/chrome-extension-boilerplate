@@ -37,7 +37,7 @@ const useGuestActions = ({ party }) => {
         return;
       }
       if (currentUrl !== currentTrack.url) {
-        window.location.href = currentTrack.url;
+        // window.location.href = currentTrack.url;
       }
     }
   }, [currentIndex, tracks]);
@@ -51,7 +51,8 @@ const useAddHandlersToButtons = ({ id }) => {
     const buttons = document.querySelectorAll(".add-party-playlist-button");
     buttons.forEach((button) => {
       const url = button.getAttribute("data-url");
-      button.onclick = () => addTrack({ variables: { id, url } });
+      const name = button.getAttribute("data-name");
+      button.onclick = () => addTrack({ variables: { id, url, name } });
     });
   }, []);
 };

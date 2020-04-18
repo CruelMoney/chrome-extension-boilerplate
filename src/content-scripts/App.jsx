@@ -6,7 +6,9 @@ document.querySelectorAll("ytd-video-renderer").forEach((node) => {
   const button = document.createElement("button");
   button.className = "add-party-playlist-button";
   const url = node.querySelector("a").getAttribute("href");
+  const name = node.querySelector("#video-title").getAttribute("title");
   button.setAttribute("data-url", "https://www.youtube.com" + url);
+  button.setAttribute("data-name", name);
   button.innerText = "Add to Party Playlist";
   node.appendChild(button);
 });
