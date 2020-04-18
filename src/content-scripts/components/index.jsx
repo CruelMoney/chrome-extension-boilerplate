@@ -44,7 +44,7 @@ const InnerContent = ({ party }) => {
     ...queryData?.joinParty,
     ...subscriptionData?.playlistUpdated,
   };
-  console.log({ data, party, queryData, subscriptionData });
+  console.log({ data, party, queryData, subscriptionData, error });
 
   const {
     tracks = [],
@@ -66,6 +66,7 @@ const InnerContent = ({ party }) => {
     <div style={styles.sideBar}>
       Hi from content script
       {id && <LeavePartyButton />}
+      <ReturnToPartyButton />
       <h3>{url}</h3>
       <h3>Admin: {admin ? "yes" : "no"}</h3>
       <h3>Current idx: {currentIndex}</h3>
@@ -85,6 +86,14 @@ const LeavePartyButton = () => {
   };
 
   return <button onClick={leaveParty}>Leave party</button>;
+};
+
+const ReturnToPartyButton = () => {
+  // should only show if current song not playing.
+  // and will redirect to the song that is currently playing
+
+  // imagine they browse around to add new songs and then go back
+  return <button>Return to party</button>;
 };
 
 const Tracks = ({ tracks }) => {

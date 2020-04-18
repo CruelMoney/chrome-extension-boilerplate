@@ -1,9 +1,10 @@
 import { useEffect } from "react";
 import { useMutation } from "@apollo/client";
-import { UPDATE_PLAYLIST } from "../../gql";
+import { UPDATE_PLAYLIST, ADD_TRACK } from "../../gql";
 
 const useGuestActions = ({ party }) => {
   const {
+    id,
     tracks = [],
     currentIndex,
     currentSongStartedTimestamp,
@@ -11,13 +12,7 @@ const useGuestActions = ({ party }) => {
     admin,
   } = party || {};
 
-  // redirect to correct song
-  useEffect(() => {
-    const track = tracks[currentIndex];
-    if (track && window.location.href !== track.url) {
-      window.location.href = track.url;
-    }
-  }, [tracks, currentIndex]);
+  useAddHandlersToButtons({ id });
 
   // update player to current playback state
   useEffect(() => {
@@ -32,6 +27,19 @@ const useGuestActions = ({ party }) => {
       video.currentTime = currentPosition;
     }
   }, [currentSongPlaybackSecond, currentSongStartedTimestamp, admin]);
+};
+
+const useAddHandlersToButtons = ({ id }) => {
+  const [addTrack] = useMutation(ADD_TRACK);
+
+  // add listeners to addd track buttons
+  useEffect(() => {
+    const buttons = document.querySelectorAll(".add-party-playlist-button");
+    buttons.forEach((button) => {
+      const url = button.getAttribute("data-url");
+      button.onclick = () => addTrack({ variables: { id, url } });
+    });
+  }, []);
 };
 
 export default useGuestActions;

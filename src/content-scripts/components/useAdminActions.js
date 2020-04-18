@@ -22,11 +22,13 @@ const useAdminActions = ({ party }) => {
         });
       };
 
-      video.addEventListener("seeked", updatePlayerState);
+      if (video) {
+        video.addEventListener("seeked", updatePlayerState);
 
-      return () => {
-        video.removeEventListener("seeked", updatePlayerState);
-      };
+        return () => {
+          video.removeEventListener("seeked", updatePlayerState);
+        };
+      }
     }
   }, [id, admin]);
 };

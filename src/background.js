@@ -1,4 +1,6 @@
 import "@babel/polyfill";
+import { client } from "./ConnectBackend";
+import { JOIN_PARTY } from "./gql";
 
 let AppInitState = 0; // it means app is off on startup
 
@@ -41,18 +43,47 @@ class Main {
   };
 }
 
-const onPartyStarted = ({ payload, sendResponse }) => {
-  chrome.storage.local.set({ party: payload });
-
+const showPartyConsole = () => {
   chrome.tabs.executeScript({
     file: "content_script.bundle.js",
   });
+};
+
+const onPartyStarted = ({ payload, sendResponse }) => {
+  chrome.storage.local.set({ party: payload });
+  showPartyConsole();
   sendResponse && sendResponse(true);
+};
+
+const onPartyJoined = async ({ playlistId }) => {
+  // get party
+  const { data } = await client.mutate({
+    mutation: JOIN_PARTY,
+    variables: { id: playlistId },
+  });
+  const party = data?.joinParty;
+
+  // redirect if we haven't redirected before
+  if (party) {
+    const { tracks, currentIndex } = party;
+    const track = tracks[currentIndex];
+
+    console.log({ track, party, currentIndex, tracks });
+
+    if (track) {
+      chrome.tabs.query({ url: track.url }, (tabs) => {
+        if (!tabs.length) {
+          chrome.tabs.update({ url: track.url });
+        }
+      });
+    }
+
+    showPartyConsole();
+  }
 };
 
 const onLeaveParty = ({ payload, sendResponse }) => {
   chrome.storage.local.remove("party");
-
   sendResponse(true);
 };
 
@@ -80,14 +111,12 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
       const playlistId = url.searchParams.get("playlistPartyId");
 
       if (playlistId) {
-        onPartyStarted({ payload: { id: playlistId } });
+        onPartyJoined({ playlistId });
       } else {
         chrome.storage.local.get(["party"], function (result) {
           if (result?.party) {
             // start content script when page is loaded and we have a party
-            chrome.tabs.executeScript({
-              file: "content_script.bundle.js",
-            });
+            onPartyJoined({ playlistId: result?.party?.id });
           }
         });
       }

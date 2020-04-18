@@ -64,3 +64,15 @@ export const PLAYLIST_UPDATED = gql`
     }
   }
 `;
+
+export const ADD_TRACK = gql`
+  mutation AddTrack($id: ID!, $url: String!) {
+    addTrack(playlistId: $id, url: $url)
+  }
+`;
+
+export const REMOVE_TRACK = gql`
+  mutation RemoveTrack($id: ID!, $url: String!) {
+    removeTrack(playlistId: $id, url: $url)
+  }
+`;
