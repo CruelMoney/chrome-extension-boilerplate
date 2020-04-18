@@ -72,7 +72,9 @@ const InnerContent = ({ party }) => {
       <h3>Current idx: {currentIndex}</h3>
       <h3>Current timestamp: {currentSongStartedTimestamp}</h3>
       <h3>Current seconds: {currentSongPlaybackSecond}</h3>
-      {tracks?.length && <Tracks tracks={tracks} playlistId={id} />}
+      {tracks?.length && (
+        <Tracks admin={admin} tracks={tracks} playlistId={id} />
+      )}
     </div>
   );
 };
@@ -96,20 +98,20 @@ const ReturnToPartyButton = () => {
   return <button>Return to party</button>;
 };
 
-const Tracks = ({ tracks, playlistId }) => {
+const Tracks = ({ tracks, playlistId, admin }) => {
   return (
     <div>
       <h2>Tracks</h2>
       <ul>
         {tracks.map((t, idx) => (
-          <Track key={idx} playlistId={playlistId} {...t} />
+          <Track key={idx} playlistId={playlistId} admin={admin} {...t} />
         ))}
       </ul>
     </div>
   );
 };
 
-const Track = ({ playlistId, url, ...props }) => {
+const Track = ({ playlistId, url, admin, ...props }) => {
   const [remove] = useMutation(REMOVE_TRACK, {
     variables: { url, id: playlistId },
   });
@@ -117,7 +119,7 @@ const Track = ({ playlistId, url, ...props }) => {
   return (
     <li {...props}>
       {url}
-      <button onClick={remove}>Remove</button>
+      {admin && <button onClick={remove}>Remove</button>}
     </li>
   );
 };
