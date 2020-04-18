@@ -18,6 +18,7 @@ export const JOIN_PARTY = gql`
       currentSongStartedTimestamp
       currentSongPlaybackSecond
       tracks {
+        id
         url
         votes
         name
@@ -45,6 +46,7 @@ export const UPDATE_PLAYLIST = gql`
       currentSongStartedTimestamp
       currentSongPlaybackSecond
       tracks {
+        id
         url
         votes
         name
@@ -62,6 +64,7 @@ export const PLAYLIST_UPDATED = gql`
       currentSongStartedTimestamp
       currentSongPlaybackSecond
       tracks {
+        id
         url
         votes
         name
@@ -77,7 +80,7 @@ export const ADD_TRACK = gql`
 `;
 
 export const REMOVE_TRACK = gql`
-  mutation RemoveTrack($id: ID!, $url: String!) {
-    removeTrack(playlistId: $id, url: $url)
+  mutation RemoveTrack($playlistId: ID!, $id: ID!) {
+    removeTrack(playlistId: $playlistId, id: $id)
   }
 `;

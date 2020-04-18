@@ -142,3 +142,9 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
     }
   }
 });
+
+chrome.tabs.onRemoved.addListener((tabId) => {
+  if (tabId === partyTabId) {
+    partyTabId = null;
+  }
+});

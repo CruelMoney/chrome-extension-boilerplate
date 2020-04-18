@@ -107,17 +107,17 @@ const Tracks = ({ tracks, playlistId, admin }) => {
     <div>
       <h2>Upcoming tracks</h2>
       <ul>
-        {tracks.map((t, idx) => (
-          <Track key={idx} playlistId={playlistId} admin={admin} {...t} />
+        {tracks.map((t) => (
+          <Track key={t.id} playlistId={playlistId} admin={admin} {...t} />
         ))}
       </ul>
     </div>
   );
 };
 
-const Track = ({ playlistId, url, name, admin, ...props }) => {
+const Track = ({ playlistId, url, id, name, admin, ...props }) => {
   const [remove] = useMutation(REMOVE_TRACK, {
-    variables: { url, id: playlistId },
+    variables: { id, playlistId },
   });
 
   return (
