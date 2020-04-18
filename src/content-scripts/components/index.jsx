@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ConnectBackend from "../../ConnectBackend";
 import { useMutation, useSubscription } from "@apollo/client";
-import { JOIN_PARTY, PLAYLIST_UPDATED } from "../../gql";
+import { JOIN_PARTY, PLAYLIST_UPDATED, REMOVE_TRACK } from "../../gql";
 import useAdminActions from "./useAdminActions";
 import useGuestActions from "./useGuestActions";
 
@@ -72,7 +72,7 @@ const InnerContent = ({ party }) => {
       <h3>Current idx: {currentIndex}</h3>
       <h3>Current timestamp: {currentSongStartedTimestamp}</h3>
       <h3>Current seconds: {currentSongPlaybackSecond}</h3>
-      {tracks?.length && <Tracks tracks={tracks} />}
+      {tracks?.length && <Tracks tracks={tracks} playlistId={id} />}
     </div>
   );
 };
@@ -96,17 +96,29 @@ const ReturnToPartyButton = () => {
   return <button>Return to party</button>;
 };
 
-const Tracks = ({ tracks }) => {
+const Tracks = ({ tracks, playlistId }) => {
   return (
     <div>
       <h2>Tracks</h2>
-
       <ul>
         {tracks.map((t, idx) => (
-          <li key={idx}>{t.url}</li>
+          <Track key={idx} playlistId={playlistId} {...t} />
         ))}
       </ul>
     </div>
+  );
+};
+
+const Track = ({ playlistId, url, ...props }) => {
+  const [remove] = useMutation(REMOVE_TRACK, {
+    variables: { url, id: playlistId },
+  });
+
+  return (
+    <li {...props}>
+      {url}
+      <button onClick={remove}>Remove</button>
+    </li>
   );
 };
 
