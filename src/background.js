@@ -3,6 +3,7 @@ import { client } from "./ConnectBackend";
 import { JOIN_PARTY, PLAYLIST_UPDATED } from "./gql";
 
 let AppInitState = 0; // it means app is off on startup
+let partyTabId = null;
 
 /**
  * Main extension functionality
@@ -65,18 +66,25 @@ const onPartyJoined = async ({ playlistId, tabId }) => {
 
   // redirect if we haven't redirected before
   if (party) {
-    handlePartyUpdate(party, tabId);
     showPartyConsole({ tabId });
-    client
-      .subscribe({ query: PLAYLIST_UPDATED, variables: { id: playlistId } })
-      .subscribe({
-        next: ({ data }) => {
-          const party = data?.playlistUpdated;
-          if (party) {
-            handlePartyUpdate(party, tabId);
-          }
-        },
-      });
+
+    if (partyTabId === tabId) {
+      handlePartyUpdate(party, tabId);
+    }
+    if (!partyTabId) {
+      partyTabId = tabId;
+      handlePartyUpdate(party, partyTabId);
+      client
+        .subscribe({ query: PLAYLIST_UPDATED, variables: { id: playlistId } })
+        .subscribe({
+          next: ({ data }) => {
+            const party = data?.playlistUpdated;
+            if (party) {
+              handlePartyUpdate(party, tabId);
+            }
+          },
+        });
+    }
   }
 };
 
