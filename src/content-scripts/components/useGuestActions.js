@@ -27,6 +27,20 @@ const useGuestActions = ({ party }) => {
       video.currentTime = currentPosition;
     }
   }, [currentSongPlaybackSecond, currentSongStartedTimestamp, admin]);
+
+  // update browser to current song
+  useEffect(() => {
+    if (currentIndex !== null) {
+      const currentUrl = window.location.href;
+      const currentTrack = tracks[currentIndex];
+      if (!currentTrack) {
+        return;
+      }
+      if (currentUrl !== currentTrack.url) {
+        window.location.href = currentTrack.url;
+      }
+    }
+  }, [currentIndex, tracks]);
 };
 
 const useAddHandlersToButtons = ({ id }) => {
