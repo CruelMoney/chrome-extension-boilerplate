@@ -36,15 +36,14 @@ const DataWrapper = () => {
 
 const InnerContent = ({ party }) => {
   const [join, { data: queryData }] = useMutation(JOIN_PARTY);
-  const { data: subscriptionData, error } = useSubscription(PLAYLIST_UPDATED, {
+  const { data: subscriptionData } = useSubscription(PLAYLIST_UPDATED, {
     variables: { id: party.id },
   });
   const data = {
     ...party,
-    ...queryData?.joinParty,
+    ...queryData?.joinParty?.playlist,
     ...subscriptionData?.playlistUpdated,
   };
-  console.log({ data, party, queryData, subscriptionData, error });
 
   const {
     tracks = [],
@@ -62,7 +61,16 @@ const InnerContent = ({ party }) => {
     join({ variables: { id: party.id } });
   }, []);
 
-  const currenTrack = tracks[currentIndex];
+  useEffect(() => {
+    if (id && queryData) {
+      chrome.runtime.sendMessage({
+        type: "JOIN_PARTY",
+        payload: data,
+      });
+    }
+  }, [id, queryData]);
+
+  const currentTrack = tracks[currentIndex];
   const upcomingTracks = tracks.slice(currentIndex + 1);
 
   return (
@@ -75,7 +83,7 @@ const InnerContent = ({ party }) => {
       <h3>Current idx: {currentIndex}</h3>
       <h3>Current timestamp: {currentSongStartedTimestamp}</h3>
       <h3>Current seconds: {currentSongPlaybackSecond}</h3>
-      <CurrentTrack {...currenTrack}></CurrentTrack>
+      <CurrentTrack {...currentTrack}></CurrentTrack>
       {upcomingTracks?.length && (
         <Tracks admin={admin} tracks={upcomingTracks} playlistId={id} />
       )}

@@ -56,18 +56,13 @@ const onPartyStarted = ({ payload, sendResponse, tabId }) => {
   sendResponse && sendResponse(true);
 };
 
-const onPartyJoined = async ({ playlistId, tabId }) => {
-  // get party
-  const { data } = await client.mutate({
-    mutation: JOIN_PARTY,
-    variables: { id: playlistId },
-  });
-  const party = data?.joinParty;
+const onPartyJoined = async ({ payload, sendResponse, tabId }) => {
+  const { id } = payload;
 
-  // redirect if we haven't redirected before
+  const party = payload;
+  console.log({ party });
+
   if (party) {
-    showPartyConsole({ tabId });
-
     if (partyTabId === tabId) {
       handlePartyUpdate(party, tabId);
     }
@@ -75,7 +70,7 @@ const onPartyJoined = async ({ playlistId, tabId }) => {
       partyTabId = tabId;
       handlePartyUpdate(party, partyTabId);
       client
-        .subscribe({ query: PLAYLIST_UPDATED, variables: { id: playlistId } })
+        .subscribe({ query: PLAYLIST_UPDATED, variables: { id } })
         .subscribe({
           next: ({ data }) => {
             const party = data?.playlistUpdated;
@@ -107,6 +102,7 @@ const onLeaveParty = ({ payload, sendResponse }) => {
 const MESSAGE_HANDLERS = {
   PARTY_STARTED: onPartyStarted,
   LEAVE_PARTY: onLeaveParty,
+  JOIN_PARTY: onPartyJoined,
 };
 
 chrome.runtime.onMessage.addListener(function (
@@ -117,7 +113,7 @@ chrome.runtime.onMessage.addListener(function (
   const fun = MESSAGE_HANDLERS[type];
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     if (fun) {
-      fun({ payload, sendResponse, tabId: tabs[0].id });
+      fun({ payload, sendResponse, tabId: sender.tab?.id || tabs[0].id });
     }
   });
 });
@@ -130,12 +126,12 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
       const playlistId = url.searchParams.get("playlistPartyId");
 
       if (playlistId) {
-        onPartyJoined({ playlistId, tabId });
+        showPartyConsole({ tabId });
       } else {
         chrome.storage.local.get(["party"], function (result) {
           if (result?.party) {
             // start content script when page is loaded and we have a party
-            onPartyJoined({ playlistId: result?.party?.id, tabId });
+            showPartyConsole({ tabId });
           }
         });
       }
