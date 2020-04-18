@@ -43,19 +43,19 @@ class Main {
   };
 }
 
-const showPartyConsole = () => {
-  chrome.tabs.executeScript({
+const showPartyConsole = ({ tabId }) => {
+  chrome.tabs.executeScript(tabId, {
     file: "content_script.bundle.js",
   });
 };
 
-const onPartyStarted = ({ payload, sendResponse }) => {
+const onPartyStarted = ({ payload, sendResponse, tabId }) => {
   chrome.storage.local.set({ party: payload });
-  showPartyConsole();
+  showPartyConsole({ tabId });
   sendResponse && sendResponse(true);
 };
 
-const onPartyJoined = async ({ playlistId }) => {
+const onPartyJoined = async ({ playlistId, tabId }) => {
   // get party
   const { data } = await client.mutate({
     mutation: JOIN_PARTY,
@@ -68,17 +68,17 @@ const onPartyJoined = async ({ playlistId }) => {
     const { tracks, currentIndex } = party;
     const track = tracks[currentIndex];
 
-    console.log({ track, party, currentIndex, tracks });
-
     if (track) {
       chrome.tabs.query({ url: track.url }, (tabs) => {
+        console.log({ track, tabs });
+
         if (!tabs.length) {
-          chrome.tabs.update({ url: track.url });
+          chrome.tabs.update(tabId, { url: track.url });
         }
       });
     }
 
-    showPartyConsole();
+    showPartyConsole({ tabId });
   }
 };
 
@@ -99,7 +99,7 @@ chrome.runtime.onMessage.addListener(function (
 ) {
   const fun = MESSAGE_HANDLERS[type];
   if (fun) {
-    fun({ payload, sendResponse });
+    fun({ payload, sendResponse, tabId: sender.tab.id });
   }
 });
 
@@ -111,12 +111,12 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
       const playlistId = url.searchParams.get("playlistPartyId");
 
       if (playlistId) {
-        onPartyJoined({ playlistId });
+        onPartyJoined({ playlistId, tabId });
       } else {
         chrome.storage.local.get(["party"], function (result) {
           if (result?.party) {
             // start content script when page is loaded and we have a party
-            onPartyJoined({ playlistId: result?.party?.id });
+            onPartyJoined({ playlistId: result?.party?.id, tabId });
           }
         });
       }

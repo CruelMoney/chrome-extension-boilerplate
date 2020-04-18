@@ -1,30 +1,33 @@
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useMutation } from "@apollo/client";
 import { UPDATE_PLAYLIST } from "../../gql";
 
 const useAdminActions = ({ party }) => {
   const [updatePlaylist, { error }] = useMutation(UPDATE_PLAYLIST);
-  const { id, admin } = party || {};
+  const { id, admin, currentIndex } = party || {};
 
+  const updatePlayerState = useCallback(() => {
+    const vid = document.querySelector("video");
+    const currentSongStartedTimestamp = new Date().getTime();
+    const currentSongPlaybackSecond = parseInt(vid.currentTime);
+
+    updatePlaylist({
+      variables: {
+        id,
+        currentIndex,
+        currentSongStartedTimestamp,
+        currentSongPlaybackSecond,
+      },
+    });
+  }, [id, currentIndex]);
+
+  // add listeners
   useEffect(() => {
     if (admin && id) {
       const video = document.querySelector("video");
-      const updatePlayerState = () => {
-        const currentSongStartedTimestamp = new Date().getTime();
-        const currentSongPlaybackSecond = parseInt(video.currentTime);
-
-        updatePlaylist({
-          variables: {
-            id,
-            currentSongStartedTimestamp,
-            currentSongPlaybackSecond,
-          },
-        });
-      };
-
       if (video) {
         video.addEventListener("seeked", updatePlayerState);
-
+        video.addEventListener("ended", updatePlayerState);
         return () => {
           video.removeEventListener("seeked", updatePlayerState);
         };
