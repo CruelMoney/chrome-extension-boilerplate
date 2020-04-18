@@ -10,8 +10,8 @@ export const START_PARTY = gql`
 `;
 
 export const JOIN_PARTY = gql`
-  mutation JoinParty($id: ID!) {
-    joinParty(id: $id) {
+  mutation JoinParty($id: ID!, $user: ID) {
+    joinParty(id: $id, user: $user) {
       playlist {
         id
         url
@@ -24,6 +24,13 @@ export const JOIN_PARTY = gql`
           votes
           name
         }
+        users {
+          id
+          name
+        }
+      }
+      user {
+        id
       }
     }
   }
@@ -69,6 +76,10 @@ export const PLAYLIST_UPDATED = gql`
         id
         url
         votes
+        name
+      }
+      users {
+        id
         name
       }
     }

@@ -35,7 +35,9 @@ const DataWrapper = () => {
 };
 
 const InnerContent = ({ party }) => {
-  const [join, { data: queryData }] = useMutation(JOIN_PARTY);
+  const [join, { data: queryData }] = useMutation(JOIN_PARTY, {
+    variables: { user: party.user?.id },
+  });
   const { data: subscriptionData } = useSubscription(PLAYLIST_UPDATED, {
     variables: { id: party.id },
   });
@@ -43,6 +45,7 @@ const InnerContent = ({ party }) => {
     ...party,
     ...queryData?.joinParty?.playlist,
     ...subscriptionData?.playlistUpdated,
+    user: queryData?.joinParty?.user,
   };
 
   const {
@@ -53,7 +56,11 @@ const InnerContent = ({ party }) => {
     currentSongStartedTimestamp,
     currentSongPlaybackSecond,
     admin,
+    user,
+    users,
   } = data;
+
+  console.log({ users });
 
   useAdminActions({ party: data });
   useGuestActions({ party: data });
@@ -83,6 +90,7 @@ const InnerContent = ({ party }) => {
       <h3>Current idx: {currentIndex}</h3>
       <h3>Current timestamp: {currentSongStartedTimestamp}</h3>
       <h3>Current seconds: {currentSongPlaybackSecond}</h3>
+      <h3>User id: {user?.id}</h3>
       <CurrentTrack {...currentTrack}></CurrentTrack>
       {upcomingTracks?.length && (
         <Tracks admin={admin} tracks={upcomingTracks} playlistId={id} />

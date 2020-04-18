@@ -60,9 +60,10 @@ const onPartyJoined = async ({ payload, sendResponse, tabId }) => {
   const { id } = payload;
 
   const party = payload;
-  console.log({ party });
 
   if (party) {
+    chrome.storage.local.set({ party });
+
     if (partyTabId === tabId) {
       handlePartyUpdate(party, tabId);
     }
