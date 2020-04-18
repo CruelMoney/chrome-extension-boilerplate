@@ -21,7 +21,9 @@ export const JOIN_PARTY = gql`
         tracks {
           id
           url
-          votes
+          votes {
+            id
+          }
           name
         }
         users {
@@ -57,7 +59,9 @@ export const UPDATE_PLAYLIST = gql`
       tracks {
         id
         url
-        votes
+        votes {
+          id
+        }
         name
       }
     }
@@ -75,7 +79,9 @@ export const PLAYLIST_UPDATED = gql`
       tracks {
         id
         url
-        votes
+        votes {
+          id
+        }
         name
       }
       users {
@@ -95,5 +101,17 @@ export const ADD_TRACK = gql`
 export const REMOVE_TRACK = gql`
   mutation RemoveTrack($playlistId: ID!, $id: ID!) {
     removeTrack(playlistId: $playlistId, id: $id)
+  }
+`;
+
+export const VOTE = gql`
+  mutation Vote($trackId: ID!, $user: ID!) {
+    castVote(trackId: $trackId, user: $user)
+  }
+`;
+
+export const REMOVE_VOTE = gql`
+  mutation RemoveVote($trackId: ID!, $user: ID!) {
+    removeVote(trackId: $trackId, user: $user)
   }
 `;

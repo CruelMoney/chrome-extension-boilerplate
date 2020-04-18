@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ConnectBackend from "../../ConnectBackend";
 import { useMutation, useSubscription } from "@apollo/client";
-import { JOIN_PARTY, PLAYLIST_UPDATED, REMOVE_TRACK } from "../../gql";
+import { JOIN_PARTY, PLAYLIST_UPDATED, REMOVE_TRACK, VOTE } from "../../gql";
 import useAdminActions from "./useAdminActions";
 import useGuestActions from "./useGuestActions";
 
@@ -60,7 +60,7 @@ const InnerContent = ({ party }) => {
     users,
   } = data;
 
-  console.log({ users });
+  console.log({ users, subscriptionData, data });
 
   useAdminActions({ party: data });
   useGuestActions({ party: data });
@@ -91,9 +91,20 @@ const InnerContent = ({ party }) => {
       <h3>Current timestamp: {currentSongStartedTimestamp}</h3>
       <h3>Current seconds: {currentSongPlaybackSecond}</h3>
       <h3>User id: {user?.id}</h3>
+      <h2>Users</h2>
+      <ul>
+        {users.map((u) => (
+          <li key={u.id}>{u.name || u.id}</li>
+        ))}
+      </ul>
       <CurrentTrack {...currentTrack}></CurrentTrack>
       {upcomingTracks?.length && (
-        <Tracks admin={admin} tracks={upcomingTracks} playlistId={id} />
+        <Tracks
+          user={user}
+          admin={admin}
+          tracks={upcomingTracks}
+          playlistId={id}
+        />
       )}
     </div>
   );
@@ -118,28 +129,45 @@ const ReturnToPartyButton = () => {
   return <button>Return to party</button>;
 };
 
-const Tracks = ({ tracks, playlistId, admin }) => {
+const Tracks = ({ tracks, user, playlistId, admin }) => {
+  const [vote] = useMutation(VOTE);
+
   return (
     <div>
       <h2>Upcoming tracks</h2>
       <ul>
         {tracks.map((t) => (
-          <Track key={t.id} playlistId={playlistId} admin={admin} {...t} />
+          <Track
+            key={t.id}
+            playlistId={playlistId}
+            user={user}
+            admin={admin}
+            {...t}
+          />
         ))}
       </ul>
     </div>
   );
 };
 
-const Track = ({ playlistId, url, id, name, admin, ...props }) => {
+const Track = ({ playlistId, url, id, votes, name, user, admin, ...props }) => {
   const [remove] = useMutation(REMOVE_TRACK, {
     variables: { id, playlistId },
   });
 
+  const [vote] = useMutation(VOTE, {
+    variables: {
+      trackId: id,
+      user: user?.id,
+    },
+  });
+
   return (
-    <li {...props}>
+    <li style={styles.track} {...props}>
+      <span>{votes.length} votes </span>
       {name || url}
       {admin && <button onClick={remove}>Remove</button>}
+      <button onClick={vote}>Vote</button>
     </li>
   );
 };
@@ -174,5 +202,8 @@ const styles = {
       25.1px 0 33.4px rgba(0, 0, 0, 0.05),
       60px 0 80px rgba(0, 0, 0, 0.07)
     `,
+  },
+  track: {
+    display: "flex",
   },
 };
