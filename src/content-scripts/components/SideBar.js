@@ -27,7 +27,7 @@ const SideBar = ({ party }) => {
   const playlist = data?.playlist;
 
   useAdminActions({ playlist, admin });
-  useGuestActions({ playlist });
+  useGuestActions({ playlist, userId: user?.id });
 
   if (!playlist) {
     return null;
@@ -139,6 +139,7 @@ const UpvoteButton = ({ votes, hasVoted, ...props }) => {
 };
 
 const Tracks = ({ tracks, user, playlistId, admin }) => {
+  console.log({ tracks });
   return (
     <ul>
       {tracks.map((t) => (
@@ -154,7 +155,17 @@ const Tracks = ({ tracks, user, playlistId, admin }) => {
   );
 };
 
-const Track = ({ playlistId, url, id, votes, name, user, admin, ...props }) => {
+const Track = ({
+  playlistId,
+  url,
+  addedBy,
+  id,
+  votes,
+  name,
+  user,
+  admin,
+  ...props
+}) => {
   const [remove] = useMutation(REMOVE_TRACK, {
     variables: { id, playlistId },
   });
@@ -177,13 +188,23 @@ const Track = ({ playlistId, url, id, votes, name, user, admin, ...props }) => {
     .split("watch?v=")
     .pop()}/default.jpg`;
 
+  console.log({ user, addedBy });
+
+  const isOwn = addedBy && user && user.id === addedBy.id;
+
   return (
-    <li className="row track" {...props}>
+    <li className={"row track" + (isOwn ? " is-owner " : "")} {...props}>
       <div className="row">
         <img className="thumbnail" src={thumbnail}></img>
         <p>{name || url}</p>
+
+        <div className="remove-button-wrapper">
+          <button className="remove-button primary-button" onClick={remove}>
+            Remove
+          </button>
+        </div>
       </div>
-      {/* {admin && <button onClick={remove}>Remove</button>} */}
+
       <UpvoteButton
         votes={votes}
         onClick={hasVoted ? unvote : vote}

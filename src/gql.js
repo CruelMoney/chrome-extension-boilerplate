@@ -74,6 +74,9 @@ export const PLAYLIST = gql`
       tracks {
         id
         url
+        addedBy {
+          id
+        }
         votes {
           id
           user {
@@ -101,6 +104,9 @@ export const PLAYLIST_UPDATED = gql`
       tracks {
         id
         url
+        addedBy {
+          id
+        }
         votes {
           id
           user {
@@ -118,8 +124,8 @@ export const PLAYLIST_UPDATED = gql`
 `;
 
 export const ADD_TRACK = gql`
-  mutation AddTrack($id: ID!, $url: String!, $name: String) {
-    addTrack(playlistId: $id, url: $url, name: $name)
+  mutation AddTrack($id: ID!, $url: String!, $name: String, $user: ID) {
+    addTrack(playlistId: $id, url: $url, name: $name, user: $user)
   }
 `;
 

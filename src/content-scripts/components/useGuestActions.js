@@ -2,7 +2,7 @@ import { useEffect, useCallback } from "react";
 import { useMutation } from "@apollo/client";
 import { UPDATE_PLAYLIST, ADD_TRACK } from "../../gql";
 
-const useGuestActions = ({ playlist }) => {
+const useGuestActions = ({ playlist, userId }) => {
   const {
     id,
     tracks = [],
@@ -12,7 +12,7 @@ const useGuestActions = ({ playlist }) => {
     admin,
   } = playlist || {};
 
-  useAddHandlersToButtons({ id });
+  useAddHandlersToButtons({ id, userId });
 
   // update player to current playback state
   useEffect(() => {
@@ -29,7 +29,7 @@ const useGuestActions = ({ playlist }) => {
   }, [currentSongPlaybackSecond, currentSongStartedTimestamp, admin]);
 };
 
-const useAddHandlersToButtons = ({ id }) => {
+const useAddHandlersToButtons = ({ id, userId }) => {
   const [addTrack] = useMutation(ADD_TRACK, { onError: console.log });
 
   const addListenersToRoot = useCallback(() => {
@@ -54,7 +54,12 @@ const useAddHandlersToButtons = ({ id }) => {
             e.preventDefault();
             e.stopImmediatePropagation();
             addTrack({
-              variables: { id, url: "https://www.youtube.com" + url, name },
+              variables: {
+                id,
+                url: "https://www.youtube.com" + url,
+                name,
+                user: userId,
+              },
             });
           };
           buttonText.onclick = clickHandler;
