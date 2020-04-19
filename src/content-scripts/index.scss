@@ -11,6 +11,7 @@ ytd-app > #content {
   background-color: #fff;
   color: #111;
   padding: 20px;
+  box-sizing: border-box;
   box-shadow: 0 2.8px 2.2px rgba(0, 0, 0, 0.02),
     0 6.7px 5.3px rgba(0, 0, 0, 0.028), 0 12.5px 10px rgba(0, 0, 0, 0.035),
     0 22.3px 17.9px rgba(0, 0, 0, 0.042), 0 41.8px 33.4px rgba(0, 0, 0, 0.05),
@@ -20,6 +21,9 @@ ytd-app > #content {
 
 #side-bar-content {
   font-size: 1.5em;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 
   h1 {
     margin-bottom: 0.5em;
@@ -119,6 +123,8 @@ ytd-app > #content {
 
   .row {
     display: flex;
+    justify-content: flex-start;
+    align-items: center;
   }
 
   .track {
@@ -131,6 +137,14 @@ ytd-app > #content {
     p {
       font-size: 14px;
       font-weight: 500;
+    }
+
+    .thumbnail {
+      width: 3.8em;
+      min-width: 3.8em;
+      object-fit: cover;
+      height: 2.2em;
+      margin-right: 0.4em;
     }
   }
 
@@ -153,6 +167,7 @@ ytd-app > #content {
     font-weight: 600;
     cursor: pointer;
     margin-left: 1em;
+    outline: none;
   }
 
   .upvote-button:hover,
@@ -182,6 +197,40 @@ ytd-app > #content {
         0 0px 5.3px rgba(0, 0, 0, 0.028), 0 0px 10px rgba(0, 0, 0, 0.035),
         0 0px 17.9px rgba(0, 0, 0, 0.042), 0 0px 33.4px rgba(0, 0, 0, 0.05),
         0 0px 80px rgba(0, 0, 0, 0.07);
+    }
+  }
+
+  .next-up-wrapper {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding-bottom: 0;
+
+    &:after {
+      content: "";
+      display: block;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: linear-gradient(
+        0deg,
+        rgba(255, 255, 255, 1),
+        rgba(255, 255, 255, 0)
+      );
+      z-index: 2;
+    }
+
+    .next-up {
+      flex: 1;
+      min-height: 0;
+      overflow: scroll;
+      margin-right: -20px;
+      padding-right: 20px;
+      z-index: 1;
     }
   }
 }

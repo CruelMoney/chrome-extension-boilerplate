@@ -101,9 +101,11 @@ const LeavePartyButton = () => {
 
 const NextUpSection = ({ ...props }) => {
   return (
-    <div className="section with-border ">
-      <h2>Next up:</h2>
-      <Tracks {...props} />
+    <div className="section with-border next-up-wrapper">
+      <h2>Up next:</h2>
+      <div className=" next-up">
+        <Tracks {...props} />
+      </div>
     </div>
   );
 };
@@ -168,9 +170,16 @@ const Track = ({ playlistId, url, id, votes, name, user, admin, ...props }) => {
   });
   const hasVoted = votes.some((v) => v?.user?.id === user?.id);
 
+  const thumbnail = `https://i.ytimg.com/vi/${url
+    .split("watch?v=")
+    .pop()}/default.jpg`;
+
   return (
     <li className="row track" {...props}>
-      <p>{name || url}</p>
+      <div className="row">
+        <img className="thumbnail" src={thumbnail}></img>
+        <p>{name || url}</p>
+      </div>
       {/* {admin && <button onClick={remove}>Remove</button>} */}
       <UpvoteButton
         votes={votes}
@@ -181,10 +190,17 @@ const Track = ({ playlistId, url, id, votes, name, user, admin, ...props }) => {
   );
 };
 
-const CurrentTrack = ({ name, votes, hasVoted }) => {
+const CurrentTrack = ({ name, url, votes, hasVoted }) => {
+  const thumbnail = `https://i.ytimg.com/vi/${url
+    .split("watch?v=")
+    .pop()}/default.jpg`;
+
   return (
     <div className={"row track"}>
-      <p>{name}</p>
+      <div className="row">
+        <img className="thumbnail" src={thumbnail}></img>
+        <p>{name || url}</p>
+      </div>
       <UpvoteButton votes={votes} disabled hasVoted={hasVoted} />
     </div>
   );
