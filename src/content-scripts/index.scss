@@ -7,6 +7,7 @@
   background-color: #fff;
   color: #111;
   padding: 20px;
+  padding-bottom: 0px;
   box-sizing: border-box;
   box-shadow: 0 2.8px 2.2px rgba(0, 0, 0, 0.02),
     0 6.7px 5.3px rgba(0, 0, 0, 0.028), 0 12.5px 10px rgba(0, 0, 0, 0.035),
@@ -280,6 +281,7 @@
     flex-direction: column;
     position: relative;
     padding-bottom: 0;
+    margin-bottom: 0;
 
     &:after {
       pointer-events: none;
@@ -310,6 +312,7 @@
   }
 
   .created-by {
+    padding: 10px 0;
     .row {
       justify-content: flex-end;
     }
