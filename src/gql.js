@@ -23,6 +23,9 @@ export const JOIN_PARTY = gql`
           url
           votes {
             id
+            user {
+              id
+            }
           }
           name
         }
@@ -61,6 +64,9 @@ export const UPDATE_PLAYLIST = gql`
         url
         votes {
           id
+          user {
+            id
+          }
         }
         name
       }
@@ -81,6 +87,9 @@ export const PLAYLIST_UPDATED = gql`
         url
         votes {
           id
+          user {
+            id
+          }
         }
         name
       }

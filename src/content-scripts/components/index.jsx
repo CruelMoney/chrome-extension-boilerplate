@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
 import ConnectBackend from "../../ConnectBackend";
 import { useMutation, useSubscription } from "@apollo/client";
-import { JOIN_PARTY, PLAYLIST_UPDATED, REMOVE_TRACK, VOTE } from "../../gql";
+import {
+  JOIN_PARTY,
+  PLAYLIST_UPDATED,
+  REMOVE_TRACK,
+  VOTE,
+  REMOVE_VOTE,
+} from "../../gql";
 import useAdminActions from "./useAdminActions";
 import useGuestActions from "./useGuestActions";
 
@@ -57,7 +63,7 @@ const InnerContent = ({ party }) => {
     currentSongPlaybackSecond,
     admin,
     user,
-    users,
+    users = [],
   } = data;
 
   console.log({ users, subscriptionData, data });
@@ -130,8 +136,6 @@ const ReturnToPartyButton = () => {
 };
 
 const Tracks = ({ tracks, user, playlistId, admin }) => {
-  const [vote] = useMutation(VOTE);
-
   return (
     <div>
       <h2>Upcoming tracks</h2>
@@ -154,7 +158,6 @@ const Track = ({ playlistId, url, id, votes, name, user, admin, ...props }) => {
   const [remove] = useMutation(REMOVE_TRACK, {
     variables: { id, playlistId },
   });
-
   const [vote] = useMutation(VOTE, {
     variables: {
       trackId: id,
@@ -162,12 +165,22 @@ const Track = ({ playlistId, url, id, votes, name, user, admin, ...props }) => {
     },
   });
 
+  const [unvote] = useMutation(REMOVE_VOTE, {
+    variables: {
+      trackId: id,
+      user: user?.id,
+    },
+  });
+  const hasVoted = votes.some((v) => v?.user?.id === user?.id);
+
   return (
     <li style={styles.track} {...props}>
       <span>{votes.length} votes </span>
       {name || url}
       {admin && <button onClick={remove}>Remove</button>}
-      <button onClick={vote}>Vote</button>
+      <button onClick={hasVoted ? unvote : vote}>
+        {hasVoted ? "Remove vote" : "Vote"}
+      </button>
     </li>
   );
 };
