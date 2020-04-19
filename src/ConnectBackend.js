@@ -17,9 +17,9 @@ const isDevelopment = true;
 
 const cache = new InMemoryCache();
 
-const domain = "http://localhost:8000";
+const domain = "https://youtube-party-playlist.cude.io";
 
-const protocol = isDevelopment ? "ws://" : "wss://";
+const protocol = "wss://";
 const subDomain = domain.split("://").pop();
 const uri = protocol + subDomain + "/graphql";
 
