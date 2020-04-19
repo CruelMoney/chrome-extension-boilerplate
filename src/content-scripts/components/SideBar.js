@@ -121,9 +121,12 @@ const EmptyPlaylist = () => {
   );
 };
 
-const UpvoteButton = ({ votes, ...props }) => {
+const UpvoteButton = ({ votes, hasVoted, ...props }) => {
   return (
-    <button className="upvote-button" {...props}>
+    <button
+      className={"upvote-button " + (hasVoted ? " active " : "")}
+      {...props}
+    >
       <span className="up-arrow" />
       <span>{votes?.length || 0}</span>
     </button>
@@ -132,20 +135,17 @@ const UpvoteButton = ({ votes, ...props }) => {
 
 const Tracks = ({ tracks, user, playlistId, admin }) => {
   return (
-    <div>
-      <h2>Upcoming tracks</h2>
-      <ul>
-        {tracks.map((t) => (
-          <Track
-            key={t.id}
-            playlistId={playlistId}
-            user={user}
-            admin={admin}
-            {...t}
-          />
-        ))}
-      </ul>
-    </div>
+    <ul>
+      {tracks.map((t) => (
+        <Track
+          key={t.id}
+          playlistId={playlistId}
+          user={user}
+          admin={admin}
+          {...t}
+        />
+      ))}
+    </ul>
   );
 };
 
@@ -169,22 +169,23 @@ const Track = ({ playlistId, url, id, votes, name, user, admin, ...props }) => {
   const hasVoted = votes.some((v) => v?.user?.id === user?.id);
 
   return (
-    <li {...props}>
-      <span>{votes.length} votes </span>
-      {name || url}
-      {admin && <button onClick={remove}>Remove</button>}
-      <button onClick={hasVoted ? unvote : vote}>
-        {hasVoted ? "Remove vote" : "Vote"}
-      </button>
+    <li className="row track" {...props}>
+      <p>{name || url}</p>
+      {/* {admin && <button onClick={remove}>Remove</button>} */}
+      <UpvoteButton
+        votes={votes}
+        onClick={hasVoted ? unvote : vote}
+        hasVoted={hasVoted}
+      />
     </li>
   );
 };
 
-const CurrentTrack = ({ name, votes }) => {
+const CurrentTrack = ({ name, votes, hasVoted }) => {
   return (
-    <div className="row track">
+    <div className={"row track"}>
       <p>{name}</p>
-      <UpvoteButton votes={votes} disabled />
+      <UpvoteButton votes={votes} disabled hasVoted={hasVoted} />
     </div>
   );
 };

@@ -11,11 +11,11 @@ ytd-app > #content {
   background-color: #fff;
   color: #111;
   padding: 20px;
-  padding-top: 60px;
   box-shadow: 0 2.8px 2.2px rgba(0, 0, 0, 0.02),
     0 6.7px 5.3px rgba(0, 0, 0, 0.028), 0 12.5px 10px rgba(0, 0, 0, 0.035),
     0 22.3px 17.9px rgba(0, 0, 0, 0.042), 0 41.8px 33.4px rgba(0, 0, 0, 0.05),
     0 100px 80px rgba(0, 0, 0, 0.07);
+  z-index: 2100;
 }
 
 #side-bar-content {
@@ -126,6 +126,16 @@ ytd-app > #content {
     align-items: center;
     font-size: 1.2em;
     font-weight: 400;
+    margin-bottom: 1em;
+
+    p {
+      font-size: 14px;
+      font-weight: 500;
+    }
+  }
+
+  .track:last-child {
+    margin-bottom: 0;
   }
 
   .upvote-button {
@@ -138,11 +148,15 @@ ytd-app > #content {
     justify-content: center;
     height: 4em;
     width: 4em;
+    min-height: 4em;
+    min-width: 4em;
     font-weight: 600;
     cursor: pointer;
+    margin-left: 1em;
   }
 
-  .upvote-button:hover {
+  .upvote-button:hover,
+  .upvote-button.active {
     background: rgb(246, 248, 249);
   }
 
