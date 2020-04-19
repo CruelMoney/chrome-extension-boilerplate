@@ -215,6 +215,8 @@ ytd-app > #content {
   }
 
   .empty-playlist {
+    flex-grow: 1;
+
     img {
       width: 100%;
       border-radius: 6px;

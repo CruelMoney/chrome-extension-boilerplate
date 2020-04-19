@@ -119,7 +119,7 @@ const EmptyPlaylist = () => {
     <div className="section empty-playlist">
       <p>
         No tracks added to the playlist. Add more tracks by clicking on the
-        action button nect to a video.
+        action button next to a video.
       </p>
       <img src={imgUrl} />
     </div>
