@@ -17,15 +17,28 @@ const useGuestActions = ({ playlist, userId }) => {
   // update player to current playback state
   useEffect(() => {
     const video = document.querySelector("video");
+    let hasUpdated = false;
 
-    if (!admin && video && currentSongStartedTimestamp) {
-      // we need to caluclate the current position
-      const diffSeconds =
-        (new Date().getTime() - currentSongStartedTimestamp) / 1000;
-      const currentPosition = currentSongPlaybackSecond + diffSeconds;
+    const updateToCurrentTime = ({ initial }) => {
+      if (!admin && video && currentSongStartedTimestamp && !hasUpdated) {
+        // we need to caluclate the current position
+        const diffSeconds =
+          (new Date().getTime() - currentSongStartedTimestamp) / 1000;
+        const currentPosition = currentSongPlaybackSecond + diffSeconds;
 
-      video.currentTime = currentPosition;
-    }
+        video.currentTime = currentPosition;
+
+        if (!initial) {
+          hasUpdated = true;
+        }
+      }
+    };
+
+    // we call it again here to perfect it after a load
+    video.addEventListener("playing", updateToCurrentTime);
+    updateToCurrentTime({ initial: true });
+
+    return () => video.removeEventListener("playing", updateToCurrentTime);
   }, [currentSongPlaybackSecond, currentSongStartedTimestamp, admin]);
 };
 
