@@ -27,7 +27,7 @@ const InnerContent = () => {
 
   return (
     <div style={styles.container}>
-      <h1>Create a YouTube Party</h1>
+      <h2>Create a YouTube Party</h2>
       <CreatePartyButton party={party} />
     </div>
   );
@@ -41,7 +41,12 @@ const CreatePartyButton = ({ party }) => {
   const partyUrl = data?.startParty?.url || party?.playlist?.url;
 
   if (partyUrl) {
-    return <input value={partyUrl}></input>;
+    return (
+      <label style={styles.label}>
+        Invitation link
+        <input style={styles.input} value={partyUrl}></input>
+      </label>
+    );
   }
 
   const startParty = async () => {
@@ -67,17 +72,60 @@ const CreatePartyButton = ({ party }) => {
       }}
     >
       <input
+        style={styles.input}
         placeholder="Your name"
         onChange={(e) => setName(e.target.value)}
+        required
       />
-      <button type="submit">Start the party</button>
+      <button type="submit" style={styles.button}>
+        Start the party
+      </button>
     </form>
   );
 };
 
 const styles = {
   container: {
-    padding: "15px",
-    width: "375px",
+    padding: "0 10px 10px 10px",
+    width: "250px",
+  },
+  input: {
+    fontSize: "15px",
+    color: "rgb(18, 43, 72)",
+    height: "40px",
+    width: "100%",
+    display: "block",
+    fontWeight: "400",
+    textIndent: "9px",
+    background: "rgb(246, 248, 249)",
+    borderRadius: "0.222em",
+    borderWidth: "initial",
+    borderStyle: "none",
+    outline: "none",
+
+    marginTop: "3px",
+  },
+  button: {
+    fontWeight: 600,
+    fontSize: "15px",
+    color: "#fff",
+    textAlign: "center",
+    lineHeight: "20px",
+    cursor: "pointer",
+    minWidth: "150px",
+    height: "40px",
+    display: "block",
+    maxWidth: "100%",
+    width: "100%",
+    position: "relative",
+    background: "rgb(204, 0, 0)",
+    borderRadius: "4px",
+    borderStyle: "none",
+    padding: "0px 1em",
+    marginTop: "15px",
+  },
+  label: {
+    color: "rgb(96, 96, 96)",
+    fontSize: "15px",
   },
 };
