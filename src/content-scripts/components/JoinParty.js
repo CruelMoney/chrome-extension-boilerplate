@@ -1,10 +1,16 @@
 import React, { useState } from "react";
-import { JOIN_PARTY } from "../../gql";
-import { useMutation } from "@apollo/client";
+import { JOIN_PARTY, PLAYLIST } from "../../gql";
+import { useMutation, useQuery } from "@apollo/client";
+import UsersSection from "./UsersSection";
 
 const JoinParty = ({ onJoined }) => {
   const url = new URL(window.location.href);
   const playlistId = url.searchParams.get("playlistPartyId");
+
+  const { data } = useQuery(PLAYLIST, {
+    variables: { id: playlistId },
+    skip: !playlistId,
+  });
 
   const [name, setName] = useState();
   const [join] = useMutation(JOIN_PARTY, {
@@ -21,6 +27,11 @@ const JoinParty = ({ onJoined }) => {
   return (
     <div id="side-bar-content">
       <h1>Join party</h1>
+      <UsersSection
+        style={{ marginTop: "20px" }}
+        users={data?.playlist?.users}
+      />
+
       <form
         onSubmit={(e) => {
           e.preventDefault();

@@ -11,6 +11,7 @@ import {
 } from "../../gql";
 import useAdminActions from "./useAdminActions";
 import useGuestActions from "./useGuestActions";
+import UsersSection from "./UsersSection";
 
 const SideBar = ({ party }) => {
   let { data } = useQuery(PLAYLIST, { variables: { id: party.playlist.id } });
@@ -32,20 +33,10 @@ const SideBar = ({ party }) => {
     return null;
   }
 
-  const {
-    tracks = [],
-    id,
-    url,
-    currentIndex,
-    currentSongStartedTimestamp,
-    currentSongPlaybackSecond,
-    users = [],
-  } = playlist;
+  const { tracks = [], id, url, currentIndex, users = [] } = playlist;
 
   const currentTrack = tracks[currentIndex];
   const upcomingTracks = tracks.slice(currentIndex + 1);
-
-  console.log({ currentTrack });
 
   return (
     <div id={"side-bar-content"}>
@@ -57,13 +48,9 @@ const SideBar = ({ party }) => {
           <input value={url} />
         </label>
       </div>
-      <div className="section">
-        <ul className="users">
-          {users.map((u) => (
-            <li key={u.id}>{u.name || u.id}</li>
-          ))}
-        </ul>
-      </div>
+
+      <UsersSection users={users} />
+
       {currentTrack && (
         <div className="section with-border ">
           <h2>Now playing:</h2>
