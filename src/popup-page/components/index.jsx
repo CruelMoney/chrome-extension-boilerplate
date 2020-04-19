@@ -34,6 +34,7 @@ const InnerContent = () => {
 };
 
 const CreatePartyButton = ({ party }) => {
+  const [name, setName] = useState();
   const [mutate, { data }] = useMutation(START_PARTY);
   const [joinParty] = useMutation(JOIN_PARTY);
 
@@ -44,27 +45,34 @@ const CreatePartyButton = ({ party }) => {
   }
 
   const startParty = async () => {
-    chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
-      // since only one tab should be active and in the current window at once
-      // the return variable should only have one entry
-      var activeTab = tabs[0];
-
-      const { data } = await mutate({ variables: { url: activeTab?.url } });
-      const playlist = data?.startParty;
-      const { data: playlistdata } = await joinParty({
-        variables: { id: playlist.id },
-      });
-
-      if (playlistdata) {
-        chrome.runtime.sendMessage({
-          type: "PARTY_STARTED",
-          payload: playlistdata.joinParty,
-        });
-      }
+    const { data } = await mutate();
+    const playlist = data?.startParty;
+    const { data: playlistdata } = await joinParty({
+      variables: { id: playlist.id, name },
     });
+
+    if (playlistdata) {
+      chrome.runtime.sendMessage({
+        type: "PARTY_STARTED",
+        payload: playlistdata.joinParty,
+      });
+    }
   };
 
-  return <button onClick={startParty}>Start the party</button>;
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        startParty();
+      }}
+    >
+      <input
+        placeholder="Your name"
+        onChange={(e) => setName(e.target.value)}
+      />
+      <button type="submit">Start the party</button>
+    </form>
+  );
 };
 
 const styles = {
