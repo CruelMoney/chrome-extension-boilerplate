@@ -133,17 +133,35 @@ ytd-app > #content {
     background: rgb(246, 248, 249);
   }
 
+  .section.colored {
+    margin: 0 -20px;
+    background-color: rgb(246, 248, 249);
+
+    margin-bottom: 20px;
+  }
+
   .users {
     list-style: none;
     columns: 2;
     padding: 0;
-    margin: -20px;
-    background-color: rgb(246, 248, 249);
-    padding: 20px;
     color: rgb(96, 96, 96);
+    margin-bottom: -1em;
+    max-height: 150px;
+    overflow: scroll;
+    padding: 20px 20px 5px 20px;
 
     li {
       font-weight: 600;
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    img {
+      height: 24px;
+      width: 24px;
+      border-radius: 12px;
+      margin-right: 6px;
     }
   }
 
