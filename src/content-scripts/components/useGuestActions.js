@@ -46,18 +46,19 @@ const useAddHandlersToButtons = ({ id }) => {
           const url = node.querySelector("a").getAttribute("href");
           const name = node.querySelector("#video-title").getAttribute("title");
           const popup = document.querySelector("ytd-popup-container");
-          const playlistButton = popup.querySelector(
-            '[role="menuitem"] paper-item'
-          );
+          const playlistButton = popup.querySelector('[role="menuitem"]');
           const buttonText = popup.querySelector("yt-formatted-string");
+          const buttonIcon = popup.querySelector("yt-icon");
           buttonText.innerHTML = "Add to party playlist";
-          playlistButton.onclick = (e) => {
+          const clickHandler = (e) => {
             e.preventDefault();
             e.stopImmediatePropagation();
             addTrack({
               variables: { id, url: "https://www.youtube.com" + url, name },
             });
           };
+          buttonText.onclick = clickHandler;
+          buttonIcon.onclick = clickHandler;
         }, 100);
       };
     });
@@ -68,13 +69,12 @@ const useAddHandlersToButtons = ({ id }) => {
     const observer = new MutationObserver(addListenersToRoot);
 
     const addListeners = () => {
-      console.log("listeners");
-      const listElement = document.querySelector("ytd-video-renderer");
+      const listElement = document.querySelector("ytd-search");
       const compactElement = document.querySelector(
         "ytd-compact-radio-renderer"
       );
       if (listElement) {
-        observer.observe(list.parentElement, { childList: true });
+        observer.observe(listElement, { childList: true, subtree: true });
       }
       if (compactElement) {
         observer.observe(compactElement.parentElement, { childList: true });

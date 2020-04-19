@@ -121,7 +121,7 @@ chrome.runtime.onMessage.addListener(function (
 
 // on loading tab
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-  if (changeInfo.status == "complete" && tab.active) {
+  if (changeInfo.status == "complete") {
     const url = new URL(tab.url);
     if (url.host.includes("youtube")) {
       const playlistId = url.searchParams.get("playlistPartyId");
