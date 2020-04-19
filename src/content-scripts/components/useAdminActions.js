@@ -2,9 +2,10 @@ import { useEffect, useCallback } from "react";
 import { useMutation } from "@apollo/client";
 import { UPDATE_PLAYLIST } from "../../gql";
 
-const useAdminActions = ({ party }) => {
+const useAdminActions = ({ playlist }) => {
   const [updatePlaylist, { error }] = useMutation(UPDATE_PLAYLIST);
-  const { id, admin, currentIndex, currentSongStartedTimestamp } = party || {};
+  const { id, admin, currentIndex, currentSongStartedTimestamp } =
+    playlist || {};
 
   const updatePlayerState = useCallback(() => {
     const vid = document.querySelector("video");

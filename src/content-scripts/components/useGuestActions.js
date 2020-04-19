@@ -2,7 +2,7 @@ import { useEffect, useCallback } from "react";
 import { useMutation } from "@apollo/client";
 import { UPDATE_PLAYLIST, ADD_TRACK } from "../../gql";
 
-const useGuestActions = ({ party }) => {
+const useGuestActions = ({ playlist }) => {
   const {
     id,
     tracks = [],
@@ -10,7 +10,7 @@ const useGuestActions = ({ party }) => {
     currentSongStartedTimestamp,
     currentSongPlaybackSecond,
     admin,
-  } = party || {};
+  } = playlist || {};
 
   useAddHandlersToButtons({ id });
 

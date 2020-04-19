@@ -1,6 +1,6 @@
 import "@babel/polyfill";
 import { client } from "./ConnectBackend";
-import { JOIN_PARTY, PLAYLIST_UPDATED } from "./gql";
+import { JOIN_PARTY, PLAYLIST_UPDATED, LEAVE_PARTY } from "./gql";
 
 let AppInitState = 0; // it means app is off on startup
 let partyTabId = null;
@@ -57,34 +57,37 @@ const onPartyStarted = ({ payload, sendResponse, tabId }) => {
 };
 
 const onPartyJoined = async ({ payload, sendResponse, tabId }) => {
-  const { id } = payload;
-
   const party = payload;
-
   if (party) {
     chrome.storage.local.set({ party });
-
-    if (partyTabId === tabId) {
-      handlePartyUpdate(party, tabId);
-    }
-    if (!partyTabId) {
-      partyTabId = tabId;
-      handlePartyUpdate(party, partyTabId);
-      client
-        .subscribe({ query: PLAYLIST_UPDATED, variables: { id } })
-        .subscribe({
-          next: ({ data }) => {
-            const party = data?.playlistUpdated;
-            if (party) {
-              handlePartyUpdate(party, tabId);
-            }
-          },
-        });
-    }
+    handleTabLoad({ tabId, party });
   }
 };
 
-const handlePartyUpdate = ({ tracks, currentIndex }, tabId) => {
+const handleTabLoad = ({ tabId, party }) => {
+  if (partyTabId === tabId) {
+    handlePlaylistUpdate(party.playlist, tabId);
+  }
+  if (!partyTabId) {
+    partyTabId = tabId;
+    handlePlaylistUpdate(party.playlist, partyTabId);
+    client
+      .subscribe({
+        query: PLAYLIST_UPDATED,
+        variables: { id: party.playlist.id },
+      })
+      .subscribe({
+        next: ({ data }) => {
+          const playlist = data?.playlistUpdated;
+          if (playlist) {
+            handlePlaylistUpdate(playlist, tabId);
+          }
+        },
+      });
+  }
+};
+
+const handlePlaylistUpdate = ({ tracks, currentIndex }, tabId) => {
   const track = tracks[currentIndex];
   if (track) {
     chrome.tabs.query({ url: track.url }, (tabs) => {
@@ -95,9 +98,23 @@ const handlePartyUpdate = ({ tracks, currentIndex }, tabId) => {
   }
 };
 
-const onLeaveParty = ({ payload, sendResponse }) => {
-  chrome.storage.local.remove("party");
-  sendResponse(true);
+const onLeaveParty = ({ payload, tabId, sendResponse }) => {
+  chrome.storage.local.get(["party"], async (result) => {
+    if (result?.party) {
+      chrome.storage.local.remove("party");
+      partyTabId = null;
+      await client.mutate({
+        mutation: LEAVE_PARTY,
+        variables: {
+          id: result.party.playlist.id,
+          user: result.party.user.id,
+        },
+      });
+      console.log({ tabId });
+      chrome.tabs.reload(tabId);
+      sendResponse(true);
+    }
+  });
 };
 
 const MESSAGE_HANDLERS = {
@@ -133,6 +150,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
           if (result?.party) {
             // start content script when page is loaded and we have a party
             showPartyConsole({ tabId });
+            handleTabLoad({ party: result.party, tabId });
           }
         });
       }

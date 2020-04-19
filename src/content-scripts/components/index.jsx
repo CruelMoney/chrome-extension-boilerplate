@@ -10,6 +10,7 @@ import {
 } from "../../gql";
 import useAdminActions from "./useAdminActions";
 import useGuestActions from "./useGuestActions";
+import JoinParty from "./JoinParty";
 
 export default class Index extends React.Component {
   constructor(props) {
@@ -18,7 +19,9 @@ export default class Index extends React.Component {
   render() {
     return (
       <ConnectBackend>
-        <DataWrapper />
+        <div style={styles.sideBar}>
+          <DataWrapper />
+        </div>
       </ConnectBackend>
     );
   }
@@ -34,25 +37,23 @@ const DataWrapper = () => {
   }, []);
 
   if (!party) {
-    return null;
+    return <JoinParty onJoined={setParty} />;
   }
 
   return <InnerContent party={party} />;
 };
 
 const InnerContent = ({ party }) => {
-  const [join, { data: queryData }] = useMutation(JOIN_PARTY, {
-    variables: { user: party.user?.id },
-  });
+  console.log({ party });
   const { data: subscriptionData } = useSubscription(PLAYLIST_UPDATED, {
-    variables: { id: party.id },
+    variables: { id: party.playlist.id },
   });
-  const data = {
-    ...party,
-    ...queryData?.joinParty?.playlist,
+
+  const playlist = {
+    ...party.playlist,
     ...subscriptionData?.playlistUpdated,
-    user: queryData?.joinParty?.user,
   };
+  const { user } = party;
 
   const {
     tracks = [],
@@ -62,32 +63,19 @@ const InnerContent = ({ party }) => {
     currentSongStartedTimestamp,
     currentSongPlaybackSecond,
     admin,
-    user,
     users = [],
-  } = data;
+  } = playlist;
 
-  console.log({ users, subscriptionData, data });
+  console.log({ users, subscriptionData, playlist });
 
-  useAdminActions({ party: data });
-  useGuestActions({ party: data });
-  useEffect(() => {
-    join({ variables: { id: party.id } });
-  }, []);
-
-  useEffect(() => {
-    if (id && queryData) {
-      chrome.runtime.sendMessage({
-        type: "JOIN_PARTY",
-        payload: data,
-      });
-    }
-  }, [id, queryData]);
+  useAdminActions({ playlist });
+  useGuestActions({ playlist });
 
   const currentTrack = tracks[currentIndex];
   const upcomingTracks = tracks.slice(currentIndex + 1);
 
   return (
-    <div style={styles.sideBar}>
+    <div>
       Hi from content script
       {id && <LeavePartyButton />}
       <ReturnToPartyButton />
@@ -121,7 +109,6 @@ const LeavePartyButton = () => {
     chrome.runtime.sendMessage({
       type: "LEAVE_PARTY",
     });
-    window.location.reload();
   };
 
   return <button onClick={leaveParty}>Leave party</button>;
