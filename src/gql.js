@@ -59,7 +59,13 @@ export const UPDATE_PLAYLIST = gql`
       currentSongStartedTimestamp: $currentSongStartedTimestamp
       currentSongPlaybackSecond: $currentSongPlaybackSecond
       currentIndex: $currentIndex
-    ) {
+    )
+  }
+`;
+
+export const PLAYLIST = gql`
+  query Playlist($id: ID!) {
+    playlist(id: $id) {
       id
       url
       currentIndex
@@ -74,6 +80,10 @@ export const UPDATE_PLAYLIST = gql`
             id
           }
         }
+        name
+      }
+      users {
+        id
         name
       }
     }

@@ -1,10 +1,10 @@
 import "@babel/polyfill";
 import { client } from "./ConnectBackend";
-import { JOIN_PARTY, PLAYLIST_UPDATED, LEAVE_PARTY } from "./gql";
+import { JOIN_PARTY, PLAYLIST_UPDATED, LEAVE_PARTY, PLAYLIST } from "./gql";
 
 let AppInitState = 0; // it means app is off on startup
 let partyTabId = null;
-
+let subscriber = null;
 /**
  * Main extension functionality
  *
@@ -59,21 +59,21 @@ const onPartyStarted = ({ payload, sendResponse, tabId }) => {
 const onPartyJoined = async ({ payload, sendResponse, tabId }) => {
   if (payload) {
     chrome.storage.local.set({ party: payload });
-    handleTabLoad({ tabId, party: payload });
+    handleTabLoad({ tabId, playlist: payload.playlist });
   }
 };
 
-const handleTabLoad = ({ tabId, party }) => {
+const handleTabLoad = async ({ tabId, playlist }) => {
   if (partyTabId === tabId) {
-    handlePlaylistUpdate(party.playlist, tabId);
+    handlePlaylistUpdate(playlist, tabId);
   }
   if (!partyTabId) {
     partyTabId = tabId;
-    handlePlaylistUpdate(party.playlist, partyTabId);
-    client
+    handlePlaylistUpdate(playlist, partyTabId);
+    subscriber = client
       .subscribe({
         query: PLAYLIST_UPDATED,
-        variables: { id: party.playlist.id },
+        variables: { id: playlist.id },
       })
       .subscribe({
         next: ({ data }) => {
@@ -102,6 +102,9 @@ const onLeaveParty = ({ payload, tabId, sendResponse }) => {
     if (result?.party) {
       chrome.storage.local.remove("party");
       partyTabId = null;
+      if (subscriber) {
+        subscriber.unsubscribe();
+      }
       await client.mutate({
         mutation: LEAVE_PARTY,
         variables: {
@@ -144,11 +147,18 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
       if (playlistId) {
         showPartyConsole({ tabId });
       } else {
-        chrome.storage.local.get(["party"], function (result) {
+        chrome.storage.local.get(["party"], async (result) => {
           if (result?.party) {
             // start content script when page is loaded and we have a party
-            showPartyConsole({ tabId });
-            handleTabLoad({ party: result.party, tabId });
+            let { data } = await client.query({
+              query: PLAYLIST,
+              variables: { id: result.party.playlist.id },
+            });
+
+            if (data) {
+              showPartyConsole({ tabId });
+              handleTabLoad({ playlist: data.playlist, tabId });
+            }
           }
         });
       }
@@ -159,5 +169,8 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 chrome.tabs.onRemoved.addListener((tabId) => {
   if (tabId === partyTabId) {
     partyTabId = null;
+    if (subscriber) {
+      subscriber.unsubscribe();
+    }
   }
 });

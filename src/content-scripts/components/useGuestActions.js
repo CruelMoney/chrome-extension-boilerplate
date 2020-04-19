@@ -59,6 +59,7 @@ const useAddHandlersToButtons = ({ id }) => {
           };
           buttonText.onclick = clickHandler;
           buttonIcon.onclick = clickHandler;
+          playlistButton.onclick = clickHandler;
         }, 100);
       };
     });
@@ -81,6 +82,7 @@ const useAddHandlersToButtons = ({ id }) => {
       }
     };
     addListeners();
+    addListenersToRoot();
     window.addEventListener("popstate", addListeners);
     return () => {
       window.removeEventListener("popstate", addListeners);

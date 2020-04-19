@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import ConnectBackend from "../../ConnectBackend";
-import { useMutation, useSubscription } from "@apollo/client";
+import { useMutation, useSubscription, useQuery } from "@apollo/client";
 import {
   JOIN_PARTY,
   PLAYLIST_UPDATED,
   REMOVE_TRACK,
   VOTE,
   REMOVE_VOTE,
+  PLAYLIST,
 } from "../../gql";
 import useAdminActions from "./useAdminActions";
 import useGuestActions from "./useGuestActions";
@@ -44,16 +45,24 @@ const DataWrapper = () => {
 };
 
 const InnerContent = ({ party }) => {
-  console.log({ party });
+  let { data } = useQuery(PLAYLIST, { variables: { id: party.playlist.id } });
   const { data: subscriptionData } = useSubscription(PLAYLIST_UPDATED, {
     variables: { id: party.playlist.id },
   });
 
-  const playlist = {
-    ...party.playlist,
-    ...subscriptionData?.playlistUpdated,
-  };
   const { user, admin } = party;
+  data = {
+    ...data,
+    ...subscriptionData,
+  };
+  const playlist = data?.playlist;
+
+  useAdminActions({ playlist, admin });
+  useGuestActions({ playlist });
+
+  if (!playlist) {
+    return null;
+  }
 
   const {
     tracks = [],
@@ -66,9 +75,6 @@ const InnerContent = ({ party }) => {
   } = playlist;
 
   console.log({ users, subscriptionData, playlist });
-
-  useAdminActions({ playlist });
-  useGuestActions({ playlist });
 
   const currentTrack = tracks[currentIndex];
   const upcomingTracks = tracks.slice(currentIndex + 1);
