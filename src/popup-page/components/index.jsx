@@ -78,7 +78,6 @@ const CreatePartyButton = ({ party }) => {
 const styles = {
   container: {
     padding: "15px",
-    height: "500px",
     width: "375px",
   },
 };

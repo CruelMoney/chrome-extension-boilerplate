@@ -38,7 +38,7 @@ const DataWrapper = () => {
     });
   }, []);
 
-  if (!party) {
+  if (true) {
     return <JoinParty onJoined={setParty} />;
   }
 

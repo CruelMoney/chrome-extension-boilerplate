@@ -64,7 +64,7 @@ ytd-app > #content {
   input {
     font-size: 1em;
     color: rgb(18, 43, 72);
-    height: 2.222em;
+    height: 40px;
     -webkit-appearance: none;
     width: 100%;
     display: block;
@@ -77,6 +77,31 @@ ytd-app > #content {
     border-color: initial;
     border-image: initial;
     outline: none;
+  }
+
+  .primary-button {
+    font-weight: 600;
+    font-size: 15px;
+    color: #fff;
+    text-align: center;
+    line-height: 20px;
+    cursor: pointer;
+    min-width: 150px;
+    height: 40px;
+    white-space: nowrap;
+    display: block;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    width: 100%;
+    position: relative;
+    background: rgb(204, 0, 0);
+    border-radius: 4px;
+    border-width: initial;
+    border-style: none;
+    border-color: initial;
+    border-image: initial;
+    padding: 0px 1em;
+    overflow: hidden;
   }
 
   .secondary-button {

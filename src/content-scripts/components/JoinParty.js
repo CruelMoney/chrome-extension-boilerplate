@@ -19,7 +19,7 @@ const JoinParty = ({ onJoined }) => {
   });
 
   return (
-    <div>
+    <div id="side-bar-content">
       <h1>Join party</h1>
       <form
         onSubmit={(e) => {
@@ -32,8 +32,11 @@ const JoinParty = ({ onJoined }) => {
           placeholder="Your name"
           onChange={(e) => setName(e.target.value)}
           required
+          style={{ marginBottom: "15px" }}
         />
-        <button type="submit">Join</button>
+        <button className="primary-button" type="submit">
+          Join
+        </button>
       </form>
     </div>
   );
