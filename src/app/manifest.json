@@ -1,5 +1,5 @@
 {
-  "name": "youtube-playlist-party",
+  "name": "YouTube Playlist Party",
   "version": "1.0",
   "manifest_version": 2,
   "description": "description",
@@ -7,6 +7,7 @@
     "16": "images/icon-16.png",
     "128": "images/icon-128.png"
   },
+  "web_accessible_resources": ["images/*.png"],
   "background": {
     "persistent": false,
     "scripts": ["background.bundle.js"]
@@ -14,7 +15,7 @@
   "permissions": [
     "storage",
     "webNavigation",
-    "https://www.youtube.com/*",
+    "*://*/*",
     "activeTab",
     "tabs",
     "declarativeContent"
@@ -24,7 +25,7 @@
       "19": "images/icon-19.png",
       "38": "images/icon-38.png"
     },
-    "default_title": "default title",
+    "default_title": "Start YouTube Party",
     "default_popup": "popup.html"
   },
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"

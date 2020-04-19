@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import ConnectBackend from "../../ConnectBackend";
 import { useMutation, useSubscription, useQuery } from "@apollo/client";
 import {
@@ -45,29 +45,41 @@ const SideBar = ({ party }) => {
   const currentTrack = tracks[currentIndex];
   const upcomingTracks = tracks.slice(currentIndex + 1);
 
+  console.log({ currentTrack });
+
   return (
     <div id={"side-bar-content"}>
-      <div style={styles.topArea}>
+      <div className="top-area section">
         <h1>YouTube Party</h1>
+        <LeavePartyButton />
         <label>
           Invitation link
-          <input style={styles.input} value={url} />
+          <input value={url} />
         </label>
       </div>
-      {id && <LeavePartyButton />}
-      <ul>
-        {users.map((u) => (
-          <li key={u.id}>{u.name || u.id}</li>
-        ))}
-      </ul>
-      <CurrentTrack {...currentTrack}></CurrentTrack>
-      {upcomingTracks?.length && (
-        <Tracks
+      <div className="section">
+        <ul className="users">
+          {users.map((u) => (
+            <li key={u.id}>{u.name || u.id}</li>
+          ))}
+        </ul>
+      </div>
+      {currentTrack && (
+        <div className="section with-border ">
+          <h2>Now playing:</h2>
+          <CurrentTrack {...currentTrack}></CurrentTrack>
+        </div>
+      )}
+
+      {upcomingTracks?.length ? (
+        <NextUpSection
           user={user}
           admin={admin}
           tracks={upcomingTracks}
           playlistId={id}
         />
+      ) : (
+        <EmptyPlaylist />
       )}
     </div>
   );
@@ -80,15 +92,42 @@ const LeavePartyButton = () => {
     });
   };
 
-  return <button onClick={leaveParty}>Leave party</button>;
+  return (
+    <button className="secondary-button" onClick={leaveParty}>
+      Leave party
+    </button>
+  );
 };
 
-const ReturnToPartyButton = () => {
-  // should only show if current song not playing.
-  // and will redirect to the song that is currently playing
+const NextUpSection = ({ ...props }) => {
+  return (
+    <div className="section with-border ">
+      <h2>Next up:</h2>
+      <Tracks {...props} />
+    </div>
+  );
+};
 
-  // imagine they browse around to add new songs and then go back
-  return <button>Return to party</button>;
+const EmptyPlaylist = () => {
+  const imgUrl = chrome.runtime.getURL("images/howto.png");
+  return (
+    <div className="section empty-playlist">
+      <p>
+        No tracks added to the playlist. Add more tracks by clicking on the
+        action button nect to a video.
+      </p>
+      <img src={imgUrl} />
+    </div>
+  );
+};
+
+const UpvoteButton = ({ votes, ...props }) => {
+  return (
+    <button className="upvote-button" {...props}>
+      <span className="up-arrow" />
+      <span>{votes?.length || 0}</span>
+    </button>
+  );
 };
 
 const Tracks = ({ tracks, user, playlistId, admin }) => {
@@ -130,7 +169,7 @@ const Track = ({ playlistId, url, id, votes, name, user, admin, ...props }) => {
   const hasVoted = votes.some((v) => v?.user?.id === user?.id);
 
   return (
-    <li style={styles.track} {...props}>
+    <li {...props}>
       <span>{votes.length} votes </span>
       {name || url}
       {admin && <button onClick={remove}>Remove</button>}
@@ -141,46 +180,13 @@ const Track = ({ playlistId, url, id, votes, name, user, admin, ...props }) => {
   );
 };
 
-const CurrentTrack = ({ name }) => {
+const CurrentTrack = ({ name, votes }) => {
   return (
-    <>
-      <h2>Now playing</h2>
-      <p style={styles.nowPlaying}>{name}</p>
-    </>
+    <div className="row track">
+      <p>{name}</p>
+      <UpvoteButton votes={votes} disabled />
+    </div>
   );
-};
-
-const styles = {
-  nowPlaying: {
-    fontSize: "2em",
-  },
-  topArea: {
-    borderBottom: "2px solid rgba(207, 215, 223, 0.25)",
-    marginTop: "1em",
-    paddingBottom: "1em",
-    marginBottom: "1em",
-  },
-  input: {
-    fontSize: "1em",
-    color: "rgb(18, 43, 72)",
-    height: "2.222em",
-    webkitAppearance: "none",
-    width: "100%",
-    display: "block",
-    fontWeight: "400",
-    boxShadow: "none",
-    textIndent: "9px",
-    background: "rgb(246, 248, 249)",
-    borderRadius: "0.222em",
-    borderWidth: "initial",
-    borderStyle: "none",
-    borderColor: "initial",
-    borderImage: "initial",
-    outline: "none",
-  },
-  track: {
-    display: "flex",
-  },
 };
 
 export default SideBar;

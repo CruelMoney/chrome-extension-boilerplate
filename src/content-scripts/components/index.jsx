@@ -21,7 +21,7 @@ export default class Index extends React.Component {
   render() {
     return (
       <ConnectBackend>
-        <div style={styles.sideBar}>
+        <div id="party-sidebar">
           <DataWrapper />
         </div>
       </ConnectBackend>
@@ -43,26 +43,4 @@ const DataWrapper = () => {
   }
 
   return <SideBar party={party} />;
-};
-
-const styles = {
-  sideBar: {
-    position: "fixed",
-    right: 0,
-    top: 0,
-    height: "100vh",
-    width: "400px",
-    backgroundColor: "#fff",
-    color: "#111",
-    padding: "20px",
-    paddingTop: "60px",
-    boxShadow: `
-    0 2.8px 2.2px rgba(0, 0, 0, 0.02),
-    0 6.7px 5.3px rgba(0, 0, 0, 0.028),
-    0 12.5px 10px rgba(0, 0, 0, 0.035),
-    0 22.3px 17.9px rgba(0, 0, 0, 0.042),
-    0 41.8px 33.4px rgba(0, 0, 0, 0.05),
-    0 100px 80px rgba(0, 0, 0, 0.07)
-    `,
-  },
 };
