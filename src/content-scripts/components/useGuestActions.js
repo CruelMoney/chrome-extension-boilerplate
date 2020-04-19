@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useMutation } from "@apollo/client";
 import { UPDATE_PLAYLIST, ADD_TRACK } from "../../gql";
 
@@ -30,17 +30,63 @@ const useGuestActions = ({ party }) => {
 };
 
 const useAddHandlersToButtons = ({ id }) => {
-  const [addTrack] = useMutation(ADD_TRACK);
+  const [addTrack] = useMutation(ADD_TRACK, { onError: console.log });
+
+  const addListenersToRoot = useCallback(() => {
+    console.log("adding listeners");
+    const listPreviews = document.querySelectorAll("ytd-video-renderer");
+    const smallPreviews = document.querySelectorAll(
+      "ytd-compact-video-renderer"
+    );
+    const videos = [...listPreviews, ...smallPreviews];
+
+    videos.forEach((node) => {
+      node.onclick = () => {
+        setTimeout(() => {
+          const url = node.querySelector("a").getAttribute("href");
+          const name = node.querySelector("#video-title").getAttribute("title");
+          const popup = document.querySelector("ytd-popup-container");
+          const playlistButton = popup.querySelector(
+            '[role="menuitem"] paper-item'
+          );
+          const buttonText = popup.querySelector("yt-formatted-string");
+          buttonText.innerHTML = "Add to party playlist";
+          playlistButton.onclick = (e) => {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            addTrack({
+              variables: { id, url: "https://www.youtube.com" + url, name },
+            });
+          };
+        }, 100);
+      };
+    });
+  }, [id, addTrack]);
 
   // add listeners to addd track buttons
   useEffect(() => {
-    const buttons = document.querySelectorAll(".add-party-playlist-button");
-    buttons.forEach((button) => {
-      const url = button.getAttribute("data-url");
-      const name = button.getAttribute("data-name");
-      button.onclick = () => addTrack({ variables: { id, url, name } });
-    });
-  }, []);
+    const observer = new MutationObserver(addListenersToRoot);
+
+    const addListeners = () => {
+      console.log("listeners");
+      const listElement = document.querySelector("ytd-video-renderer");
+      const compactElement = document.querySelector(
+        "ytd-compact-radio-renderer"
+      );
+      if (listElement) {
+        observer.observe(list.parentElement, { childList: true });
+      }
+      if (compactElement) {
+        observer.observe(compactElement.parentElement, { childList: true });
+      }
+    };
+    addListeners();
+    window.addEventListener("popstate", addListeners);
+    return () => {
+      window.removeEventListener("popstate", addListeners);
+      observer.disconnect();
+    };
+  }, [addListenersToRoot]);
 };
 
 export default useGuestActions;

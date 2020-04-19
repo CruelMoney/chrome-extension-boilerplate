@@ -40,12 +40,10 @@ const useAdminActions = ({ party }) => {
     if (admin && id) {
       const video = document.querySelector("video");
       if (video) {
-        video.addEventListener("seeked", updatePlayerState);
         video.addEventListener("play", updatePlayerState);
         video.addEventListener("ended", goToNextSong);
 
         return () => {
-          video.removeEventListener("seeked", updatePlayerState);
           video.removeEventListener("play", updatePlayerState);
           video.removeEventListener("ended", goToNextSong);
         };
