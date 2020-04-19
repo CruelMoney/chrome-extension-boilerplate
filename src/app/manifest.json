@@ -11,8 +11,14 @@
     "persistent": false,
     "scripts": ["background.bundle.js"]
   },
-  "permissions": ["storage", "webNavigation", "*://*/*", "activeTab", "tabs"],
-  "browser_action": {
+  "permissions": [
+    "storage",
+    "webNavigation",
+    "activeTab",
+    "tabs",
+    "declarativeContent"
+  ],
+  "page_action": {
     "default_icon": {
       "19": "images/icon-19.png",
       "38": "images/icon-38.png"
