@@ -53,7 +53,7 @@ const InnerContent = ({ party }) => {
     ...party.playlist,
     ...subscriptionData?.playlistUpdated,
   };
-  const { user } = party;
+  const { user, admin } = party;
 
   const {
     tracks = [],
@@ -62,7 +62,6 @@ const InnerContent = ({ party }) => {
     currentIndex,
     currentSongStartedTimestamp,
     currentSongPlaybackSecond,
-    admin,
     users = [],
   } = playlist;
 

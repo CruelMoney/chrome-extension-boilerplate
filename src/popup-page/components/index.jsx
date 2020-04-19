@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ConnectBackend from "../../ConnectBackend";
 import { useMutation } from "@apollo/client";
-import { START_PARTY } from "../../gql";
+import { START_PARTY, JOIN_PARTY } from "../../gql";
 
 export default class Index extends React.Component {
   constructor(props) {
@@ -35,8 +35,9 @@ const InnerContent = () => {
 
 const CreatePartyButton = ({ party }) => {
   const [mutate, { data }] = useMutation(START_PARTY);
+  const [joinParty] = useMutation(JOIN_PARTY);
 
-  const partyUrl = data?.startParty?.url || party?.url;
+  const partyUrl = data?.startParty?.url || party?.playlist?.url;
 
   if (partyUrl) {
     return <input value={partyUrl}></input>;
@@ -49,12 +50,15 @@ const CreatePartyButton = ({ party }) => {
       var activeTab = tabs[0];
 
       const { data } = await mutate({ variables: { url: activeTab?.url } });
-      const { id, url } = data?.startParty || {};
+      const playlist = data?.startParty;
+      const { data: playlistdata } = await joinParty({
+        variables: { id: playlist.id },
+      });
 
-      if (id) {
+      if (playlistdata) {
         chrome.runtime.sendMessage({
           type: "PARTY_STARTED",
-          payload: { id, admin: true, url },
+          payload: playlistdata.joinParty,
         });
       }
     });

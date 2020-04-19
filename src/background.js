@@ -51,16 +51,15 @@ const showPartyConsole = ({ tabId }) => {
 };
 
 const onPartyStarted = ({ payload, sendResponse, tabId }) => {
-  chrome.storage.local.set({ party: payload });
+  chrome.storage.local.set({ party: { ...payload, admin: true } });
   showPartyConsole({ tabId });
   sendResponse && sendResponse(true);
 };
 
 const onPartyJoined = async ({ payload, sendResponse, tabId }) => {
-  const party = payload;
-  if (party) {
-    chrome.storage.local.set({ party });
-    handleTabLoad({ tabId, party });
+  if (payload) {
+    chrome.storage.local.set({ party: payload });
+    handleTabLoad({ tabId, party: payload });
   }
 };
 
@@ -110,7 +109,6 @@ const onLeaveParty = ({ payload, tabId, sendResponse }) => {
           user: result.party.user.id,
         },
       });
-      console.log({ tabId });
       chrome.tabs.reload(tabId);
       sendResponse(true);
     }
