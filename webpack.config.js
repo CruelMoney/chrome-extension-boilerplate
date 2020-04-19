@@ -2,6 +2,7 @@ const webpack = require("webpack");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const dotenv = require("dotenv").config({ path: __dirname + "/.env" });
 const { manifestTransform } = require("./scripts/transform");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = (env, options) => {
   return {
@@ -9,14 +10,24 @@ module.exports = (env, options) => {
       content_script: "./src/content-scripts/App.jsx",
       background: "./src/background.js",
       popup: "./src/popup-page/App.jsx",
-      option: "./src/option-page/App.jsx"
+      option: "./src/option-page/App.jsx",
     },
     module: {
       rules: [
         {
           test: /\.(js|jsx)$/,
           exclude: /node_modules/,
-          use: ["babel-loader"]
+          use: ["babel-loader"],
+        },
+        {
+          test: /\.scss$/,
+          use: [
+            {
+              loader: MiniCssExtractPlugin.loader,
+            },
+            "css-loader",
+            "sass-loader",
+          ],
         },
         {
           test: /\.(gif|png|jpe?g|svg)$/i,
@@ -26,32 +37,32 @@ module.exports = (env, options) => {
               loader: "image-webpack-loader",
               options: {
                 bypassOnDebug: true, // webpack@1.x
-                disable: true // webpack@2.x and newer
-              }
-            }
-          ]
-        }
-      ]
+                disable: true, // webpack@2.x and newer
+              },
+            },
+          ],
+        },
+      ],
     },
     resolve: {
-      extensions: ["*", ".js", ".jsx"]
+      extensions: ["*", ".js", ".jsx"],
     },
     output: {
       path: __dirname + "/dist",
       publicPath: "/",
-      filename: "[name].bundle.js"
+      filename: "[name].bundle.js",
     },
     plugins: [
       new CopyWebpackPlugin(
         [
           { from: "./src/popup-page/popup.html", force: true },
           { from: "./src/option-page/option.html", force: true },
-          { from: "./src/app/", force: true }
+          { from: "./src/app/", force: true },
         ],
         {}
       ),
       new webpack.DefinePlugin({
-        "process.env": dotenv.parsed
+        "process.env": dotenv.parsed,
       }),
       new CopyWebpackPlugin([
         {
@@ -59,14 +70,15 @@ module.exports = (env, options) => {
           force: true,
           transform(content, path) {
             return manifestTransform(content, path, options);
-          }
-        }
+          },
+        },
       ]),
-      new webpack.HotModuleReplacementPlugin()
+      new webpack.HotModuleReplacementPlugin(),
+      new MiniCssExtractPlugin(),
     ],
     devServer: {
       contentBase: "./dist",
-      hot: true
-    }
+      hot: true,
+    },
   };
 };

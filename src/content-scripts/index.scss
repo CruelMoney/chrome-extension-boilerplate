@@ -1,0 +1,19 @@
+ytd-app > #content {
+  padding-right: 450px;
+}
+
+#side-bar-content {
+  font-size: 1.5em;
+
+  h1 {
+    margin-bottom: 0.5em;
+  }
+
+  label > input {
+    margin-top: 6px;
+  }
+
+  label {
+    color: rgb(96, 96, 96);
+  }
+}

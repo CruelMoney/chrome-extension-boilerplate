@@ -12,6 +12,7 @@ import {
 import useAdminActions from "./useAdminActions";
 import useGuestActions from "./useGuestActions";
 import JoinParty from "./JoinParty";
+import SideBar from "./SideBar";
 
 export default class Index extends React.Component {
   constructor(props) {
@@ -41,174 +42,27 @@ const DataWrapper = () => {
     return <JoinParty onJoined={setParty} />;
   }
 
-  return <InnerContent party={party} />;
-};
-
-const InnerContent = ({ party }) => {
-  let { data } = useQuery(PLAYLIST, { variables: { id: party.playlist.id } });
-  const { data: subscriptionData } = useSubscription(PLAYLIST_UPDATED, {
-    variables: { id: party.playlist.id },
-  });
-
-  const { user, admin } = party;
-  data = {
-    ...data,
-    ...subscriptionData,
-  };
-  const playlist = data?.playlist;
-
-  useAdminActions({ playlist, admin });
-  useGuestActions({ playlist });
-
-  if (!playlist) {
-    return null;
-  }
-
-  const {
-    tracks = [],
-    id,
-    url,
-    currentIndex,
-    currentSongStartedTimestamp,
-    currentSongPlaybackSecond,
-    users = [],
-  } = playlist;
-
-  console.log({ users, subscriptionData, playlist });
-
-  const currentTrack = tracks[currentIndex];
-  const upcomingTracks = tracks.slice(currentIndex + 1);
-
-  return (
-    <div>
-      Hi from content script
-      {id && <LeavePartyButton />}
-      <ReturnToPartyButton />
-      <h3>{url}</h3>
-      <h3>Admin: {admin ? "yes" : "no"}</h3>
-      <h3>Current idx: {currentIndex}</h3>
-      <h3>Current timestamp: {currentSongStartedTimestamp}</h3>
-      <h3>Current seconds: {currentSongPlaybackSecond}</h3>
-      <h3>User id: {user?.id}</h3>
-      <h2>Users</h2>
-      <ul>
-        {users.map((u) => (
-          <li key={u.id}>{u.name || u.id}</li>
-        ))}
-      </ul>
-      <CurrentTrack {...currentTrack}></CurrentTrack>
-      {upcomingTracks?.length && (
-        <Tracks
-          user={user}
-          admin={admin}
-          tracks={upcomingTracks}
-          playlistId={id}
-        />
-      )}
-    </div>
-  );
-};
-
-const LeavePartyButton = () => {
-  const leaveParty = () => {
-    chrome.runtime.sendMessage({
-      type: "LEAVE_PARTY",
-    });
-  };
-
-  return <button onClick={leaveParty}>Leave party</button>;
-};
-
-const ReturnToPartyButton = () => {
-  // should only show if current song not playing.
-  // and will redirect to the song that is currently playing
-
-  // imagine they browse around to add new songs and then go back
-  return <button>Return to party</button>;
-};
-
-const Tracks = ({ tracks, user, playlistId, admin }) => {
-  return (
-    <div>
-      <h2>Upcoming tracks</h2>
-      <ul>
-        {tracks.map((t) => (
-          <Track
-            key={t.id}
-            playlistId={playlistId}
-            user={user}
-            admin={admin}
-            {...t}
-          />
-        ))}
-      </ul>
-    </div>
-  );
-};
-
-const Track = ({ playlistId, url, id, votes, name, user, admin, ...props }) => {
-  const [remove] = useMutation(REMOVE_TRACK, {
-    variables: { id, playlistId },
-  });
-  const [vote] = useMutation(VOTE, {
-    variables: {
-      trackId: id,
-      user: user?.id,
-    },
-  });
-
-  const [unvote] = useMutation(REMOVE_VOTE, {
-    variables: {
-      trackId: id,
-      user: user?.id,
-    },
-  });
-  const hasVoted = votes.some((v) => v?.user?.id === user?.id);
-
-  return (
-    <li style={styles.track} {...props}>
-      <span>{votes.length} votes </span>
-      {name || url}
-      {admin && <button onClick={remove}>Remove</button>}
-      <button onClick={hasVoted ? unvote : vote}>
-        {hasVoted ? "Remove vote" : "Vote"}
-      </button>
-    </li>
-  );
-};
-
-const CurrentTrack = ({ name }) => {
-  return (
-    <>
-      <h2>Now playing</h2>
-      <p style={styles.nowPlaying}>{name}</p>
-    </>
-  );
+  return <SideBar party={party} />;
 };
 
 const styles = {
-  nowPlaying: {
-    fontSize: "2em",
-  },
   sideBar: {
     position: "fixed",
     right: 0,
     top: 0,
     height: "100vh",
-    width: "430px",
+    width: "400px",
     backgroundColor: "#fff",
-    padding: "10px",
+    color: "#111",
+    padding: "20px",
     paddingTop: "60px",
     boxShadow: `
-      1.7px 0 2.2px rgba(0, 0, 0, 0.02),
-      4px 0 5.3px rgba(0, 0, 0, 0.028),
-      7.5px 0 10px rgba(0, 0, 0, 0.035),
-      13.4px 0 17.9px rgba(0, 0, 0, 0.042),
-      25.1px 0 33.4px rgba(0, 0, 0, 0.05),
-      60px 0 80px rgba(0, 0, 0, 0.07)
+    0 2.8px 2.2px rgba(0, 0, 0, 0.02),
+    0 6.7px 5.3px rgba(0, 0, 0, 0.028),
+    0 12.5px 10px rgba(0, 0, 0, 0.035),
+    0 22.3px 17.9px rgba(0, 0, 0, 0.042),
+    0 41.8px 33.4px rgba(0, 0, 0, 0.05),
+    0 100px 80px rgba(0, 0, 0, 0.07)
     `,
-  },
-  track: {
-    display: "flex",
   },
 };

@@ -48,6 +48,7 @@ const showPartyConsole = ({ tabId }) => {
   chrome.tabs.executeScript(tabId, {
     file: "content_script.bundle.js",
   });
+  chrome.tabs.insertCSS(tabId, { file: "content_script.css" });
 };
 
 const onPartyStarted = ({ payload, sendResponse, tabId }) => {
