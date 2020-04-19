@@ -10,6 +10,7 @@ const JoinParty = ({ onJoined }) => {
   const [join] = useMutation(JOIN_PARTY, {
     variables: { name, id: playlistId },
     onCompleted: (data) => {
+      console.log({ data });
       chrome.runtime.sendMessage({
         type: "JOIN_PARTY",
         payload: data.joinParty,
@@ -21,7 +22,12 @@ const JoinParty = ({ onJoined }) => {
   return (
     <div>
       <h1>Join party</h1>
-      <form onSubmit={() => join()}>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          join();
+        }}
+      >
         <input
           value={name}
           placeholder="Your name"

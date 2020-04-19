@@ -148,12 +148,16 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         showPartyConsole({ tabId });
       } else {
         chrome.storage.local.get(["party"], async (result) => {
+          console.log({ result });
+
           if (result?.party) {
             // start content script when page is loaded and we have a party
             let { data } = await client.query({
               query: PLAYLIST,
               variables: { id: result.party.playlist.id },
             });
+
+            console.log({ data });
 
             if (data) {
               showPartyConsole({ tabId });

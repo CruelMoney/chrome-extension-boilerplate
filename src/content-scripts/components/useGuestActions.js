@@ -22,7 +22,7 @@ const useGuestActions = ({ playlist }) => {
       // we need to caluclate the current position
       const diffSeconds =
         (new Date().getTime() - currentSongStartedTimestamp) / 1000;
-      const currentPosition = currentSongPlaybackSecond + diffSeconds + 1;
+      const currentPosition = currentSongPlaybackSecond + diffSeconds;
 
       video.currentTime = currentPosition;
     }
