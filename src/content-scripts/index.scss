@@ -136,8 +136,9 @@ ytd-app > #content {
   .section.colored {
     margin: 0 -20px;
     background-color: rgb(246, 248, 249);
-
+    box-sizing: border-box;
     margin-bottom: 20px;
+    padding-bottom: 0;
   }
 
   .users {
@@ -145,10 +146,11 @@ ytd-app > #content {
     columns: 2;
     padding: 0;
     color: rgb(96, 96, 96);
-    margin-bottom: -1em;
     max-height: 150px;
     overflow: scroll;
-    padding: 20px;
+    padding: 20px 20px 5px 20px;
+    box-sizing: border-box;
+    min-height: 64px;
 
     li {
       font-weight: 600;
