@@ -125,6 +125,7 @@ ytd-app > #content {
     display: flex;
     justify-content: flex-start;
     align-items: center;
+    width: 100%;
   }
 
   .track {
@@ -209,6 +210,7 @@ ytd-app > #content {
     padding-bottom: 0;
 
     &:after {
+      pointer-events: none;
       content: "";
       display: block;
       position: absolute;
@@ -231,6 +233,27 @@ ytd-app > #content {
       margin-right: -20px;
       padding-right: 20px;
       z-index: 1;
+      padding-bottom: 40px;
+    }
+  }
+
+  .created-by {
+    .row {
+      justify-content: flex-end;
+    }
+
+    a {
+      text-decoration: none;
+      color: rgb(18, 43, 72);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    img {
+      border-radius: 50%;
+      height: 40px;
+      width: 40px;
+      margin-left: 0.5em;
     }
   }
 }

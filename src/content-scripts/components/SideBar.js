@@ -81,6 +81,7 @@ const SideBar = ({ party }) => {
       ) : (
         <EmptyPlaylist />
       )}
+      <CreatedBySection />
     </div>
   );
 };
@@ -106,6 +107,21 @@ const NextUpSection = ({ ...props }) => {
       <div className=" next-up">
         <Tracks {...props} />
       </div>
+    </div>
+  );
+};
+
+const CreatedBySection = ({ ...props }) => {
+  return (
+    <div className="created-by">
+      <a className="row" href="https://twitter.com/ChrisDengso">
+        <p>By Christopher Dengsø</p>
+        <img
+          src={
+            "https://pbs.twimg.com/profile_images/1210274375565500416/dC60WJnl_reasonably_small.jpg"
+          }
+        ></img>
+      </a>
     </div>
   );
 };
