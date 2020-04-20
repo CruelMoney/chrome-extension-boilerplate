@@ -31,6 +31,10 @@ ytd-app {
     width: 100% !important;
     height: 100% !important;
   }
+
+  ytd-secondary-search-container-renderer {
+    display: none !important;
+  }
 }
 
 #party-sidebar {
