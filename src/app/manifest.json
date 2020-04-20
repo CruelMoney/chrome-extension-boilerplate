@@ -14,7 +14,7 @@
   },
   "permissions": [
     "storage",
-    "*://*/*",
+    "https://www.youtube.com/*",
     "activeTab",
     "tabs",
     "declarativeContent"

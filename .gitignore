@@ -5,3 +5,4 @@ babelscripts@1.0.0
 dist/
 out/
 .DS_STORE
+.zip
