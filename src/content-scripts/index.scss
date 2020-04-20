@@ -8,25 +8,30 @@ ytd-app {
   ytd-watch-flexy[flexy_][is-two-columns_] #columns.ytd-watch-flexy {
     min-width: 0 !important;
   }
+
   ytd-watch-flexy[flexy_][is-two-columns_][is-extra-wide-video_]
     #primary.ytd-watch-flexy,
   ytd-watch-flexy[flexy_][is-two-columns_][is-four-three-to-sixteen-nine-video_]
     #primary.ytd-watch-flexy {
     min-width: 0 !important;
   }
+
   ytd-watch-flexy:not([theater]):not([fullscreen]) #primary.ytd-watch-flexy,
   ytd-watch-flexy:not([theater]):not([fullscreen]) #secondary.ytd-watch-flexy {
     min-width: 0 !important;
   }
+
   ytd-watch-flexy[flexy_] #player-container-outer.ytd-watch-flexy {
     min-width: 0 !important;
   }
+
   .html5-video-player .video-click-tracking,
   .html5-video-player .video-stream {
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
   }
+
   .html5-video-container {
     width: 100% !important;
     height: 100% !important;
