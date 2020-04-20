@@ -42,7 +42,6 @@ const SideBar = ({ party }) => {
     <div id={"side-bar-content"}>
       <div className="top-area section">
         <h1>YouTube Party</h1>
-        <LeavePartyButton />
         <label>
           Invitation link
           <input value={url} />
@@ -70,20 +69,6 @@ const SideBar = ({ party }) => {
       )}
       <CreatedBySection />
     </div>
-  );
-};
-
-const LeavePartyButton = () => {
-  const leaveParty = () => {
-    chrome.runtime.sendMessage({
-      type: "LEAVE_PARTY",
-    });
-  };
-
-  return (
-    <button className="secondary-button" onClick={leaveParty}>
-      Leave party
-    </button>
   );
 };
 
