@@ -1,20 +1,21 @@
-import React, { useEffect, useState, useRef } from "react";
-import ConnectBackend from "../../ConnectBackend";
+import React from "react";
 import { useMutation, useSubscription, useQuery } from "@apollo/client";
 import {
-  JOIN_PARTY,
   PLAYLIST_UPDATED,
   REMOVE_TRACK,
   VOTE,
   REMOVE_VOTE,
   PLAYLIST,
 } from "../../gql";
-import useAdminActions from "./useAdminActions";
-import useGuestActions from "./useGuestActions";
 import UsersSection from "./UsersSection";
+import useGuestActions from "./useGuestActions";
+import useAdminActions from "./useAdminActions";
 
 const SideBar = ({ party }) => {
-  let { data } = useQuery(PLAYLIST, { variables: { id: party.playlist.id } });
+  let { data, error } = useQuery(PLAYLIST, {
+    variables: { id: party.playlist.id },
+  });
+
   const { data: subscriptionData } = useSubscription(PLAYLIST_UPDATED, {
     variables: { id: party.playlist.id },
   });
@@ -119,7 +120,6 @@ const UpvoteButton = ({ votes, hasVoted, ...props }) => {
 };
 
 const Tracks = ({ tracks, user, playlistId, admin }) => {
-  console.log({ tracks });
   return (
     <ul>
       {tracks.map((t) => (

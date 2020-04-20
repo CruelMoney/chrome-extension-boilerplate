@@ -28,6 +28,8 @@ const DataWrapper = () => {
     });
   }, []);
 
+  console.log({ party });
+
   if (!party) {
     return <JoinParty onJoined={setParty} />;
   }

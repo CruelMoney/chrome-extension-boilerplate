@@ -9,12 +9,13 @@
   },
   "web_accessible_resources": ["images/*.png"],
   "background": {
-    "persistent": false,
     "scripts": ["background.bundle.js"]
   },
   "permissions": [
     "storage",
     "https://www.youtube.com/*",
+    "wss://youtube-party-playlist.cude.io/*",
+    "https://youtube-party-playlist.cude.io/*",
     "activeTab",
     "tabs",
     "declarativeContent"

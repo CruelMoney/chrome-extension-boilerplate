@@ -87,7 +87,8 @@ const CreatePartyButton = ({ party }) => {
 const styles = {
   container: {
     padding: "0 10px 10px 10px",
-    width: "250px",
+    width: "275px",
+    fontFamily: "Roboto, Arial, sans-serif",
   },
   input: {
     fontSize: "15px",
