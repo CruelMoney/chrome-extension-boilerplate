@@ -145,17 +145,24 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   if (changeInfo.status == "complete") {
     const url = new URL(tab.url);
     if (url.host.includes("youtube")) {
-      const playlistId = url.searchParams.get("playlistPartyId");
+      chrome.storage.local.get(["party"], async (result) => {
+        const storedParty = result?.party;
+        const playlistId = url.searchParams.get("playlistPartyId");
 
-      if (playlistId) {
-        showPartyConsole({ tabId });
-      } else {
-        chrome.storage.local.get(["party"], async (result) => {
-          if (result?.party) {
+        if (!storedParty && playlistId) {
+          showPartyConsole({ tabId });
+          return;
+        }
+        if (storedParty) {
+          if (playlistId && storedParty.playlist.id !== playlistId) {
+            // joining a new party, so first leave this one
+            onLeaveParty({ tabId });
+            return;
+          } else {
             // start content script when page is loaded and we have a party
             let { data } = await client.query({
               query: PLAYLIST,
-              variables: { id: result.party.playlist.id },
+              variables: { id: storedParty.playlist.id },
             });
 
             if (data) {
@@ -163,8 +170,8 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
               handleTabLoad({ playlist: data.playlist, tabId });
             }
           }
-        });
-      }
+        }
+      });
     }
   }
 });
