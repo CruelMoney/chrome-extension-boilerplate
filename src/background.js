@@ -114,7 +114,9 @@ const onLeaveParty = ({ payload, tabId, sendResponse }) => {
         },
       });
       chrome.tabs.reload(tabId);
-      sendResponse(true);
+      if (sendResponse) {
+        sendResponse(true);
+      }
     }
   });
 };
@@ -173,6 +175,8 @@ chrome.tabs.onRemoved.addListener((tabId) => {
     if (subscriber) {
       subscriber.unsubscribe();
     }
+    // leave party
+    onLeaveParty({ tabId });
   }
 });
 
