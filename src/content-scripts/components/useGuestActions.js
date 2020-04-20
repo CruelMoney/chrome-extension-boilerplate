@@ -29,6 +29,12 @@ const useGuestActions = ({ playlist, userId }) => {
 
           video.currentTime = currentPosition;
 
+          console.log("updating to");
+          console.log({
+            currentSongStartedTimestamp,
+            currentSongPlaybackSecond,
+          });
+
           if (!initial) {
             hasUpdated = true;
           }

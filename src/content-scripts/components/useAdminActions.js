@@ -24,8 +24,6 @@ const useAdminActions = ({ playlist, admin }) => {
 
   const goToNextSong = useCallback(() => {
     const currentSongStartedTimestamp = new Date().getTime();
-    console.log({ currentIndex });
-    console.log("Going to next song", currentIndex + 1);
     updatePlaylist({
       variables: {
         id,
@@ -35,6 +33,12 @@ const useAdminActions = ({ playlist, admin }) => {
       },
     });
   }, [id, currentIndex]);
+
+  useEffect(() => {
+    if (id && !currentSongStartedTimestamp) {
+      updatePlayerState();
+    }
+  }, [id, currentSongStartedTimestamp, updatePlayerState]);
 
   // add listeners
   useEffect(() => {
@@ -50,7 +54,7 @@ const useAdminActions = ({ playlist, admin }) => {
         };
       }
     }
-  }, [id, admin, currentIndex]);
+  }, [id, admin, updatePlayerState]);
 };
 
 export default useAdminActions;

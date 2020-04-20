@@ -1,16 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ConnectBackend from "../../ConnectBackend";
-import { useMutation, useSubscription, useQuery } from "@apollo/client";
-import {
-  JOIN_PARTY,
-  PLAYLIST_UPDATED,
-  REMOVE_TRACK,
-  VOTE,
-  REMOVE_VOTE,
-  PLAYLIST,
-} from "../../gql";
-import useAdminActions from "./useAdminActions";
-import useGuestActions from "./useGuestActions";
+
 import JoinParty from "./JoinParty";
 import SideBar from "./SideBar";
 

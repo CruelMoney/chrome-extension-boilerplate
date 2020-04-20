@@ -27,7 +27,7 @@ const SideBar = ({ party }) => {
   const playlist = data?.playlist;
 
   useAdminActions({ playlist, admin });
-  useGuestActions({ playlist, userId: user?.id });
+  useGuestActions({ playlist, admin, userId: user?.id });
 
   if (!playlist) {
     return null;
