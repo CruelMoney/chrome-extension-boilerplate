@@ -7,7 +7,6 @@ const useAdminActions = ({ playlist, admin }) => {
   const { id, currentIndex, currentSongStartedTimestamp } = playlist || {};
 
   const updatePlayerState = useCallback(() => {
-    console.log("updating player state");
     const vid = document.querySelector("video");
     const currentSongStartedTimestamp = new Date().getTime();
     const currentSongPlaybackSecond = parseInt(vid.currentTime);

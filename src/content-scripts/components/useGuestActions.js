@@ -29,12 +29,6 @@ const useGuestActions = ({ playlist, userId }) => {
 
           video.currentTime = currentPosition;
 
-          console.log("updating to");
-          console.log({
-            currentSongStartedTimestamp,
-            currentSongPlaybackSecond,
-          });
-
           if (!initial) {
             hasUpdated = true;
           }
@@ -54,7 +48,6 @@ const useAddHandlersToButtons = ({ id, userId }) => {
   const [addTrack] = useMutation(ADD_TRACK, { onError: console.log });
 
   const addListenersToRoot = useCallback(() => {
-    console.log("adding listeners");
     const listPreviews = document.querySelectorAll("ytd-video-renderer");
     const smallPreviews = document.querySelectorAll(
       "ytd-compact-video-renderer"
