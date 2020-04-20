@@ -2,7 +2,7 @@
   "name": "YouTube Playlist Party",
   "version": "1.0",
   "manifest_version": 2,
-  "description": "description",
+  "description": "Have a party with your friends on YouTube",
   "icons": {
     "16": "images/icon-16.png",
     "128": "images/icon-128.png"
