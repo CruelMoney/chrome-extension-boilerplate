@@ -1,3 +1,11 @@
+ytd-app {
+  right: 400px !important;
+
+  // .ytp-chrome-bottom {
+  //   max-width: 900px !important;
+  // }
+}
+
 #party-sidebar {
   position: fixed;
   right: 0;
@@ -313,6 +321,7 @@
 
   .created-by {
     padding: 10px 0;
+
     .row {
       justify-content: flex-end;
     }

@@ -5,7 +5,7 @@ import "./index.scss";
 
 const Element = document.createElement("div");
 Element.setAttribute("id", "dfghbnjmERHJKFGHNMVBNMFBNMbmvvxnbdgf");
-document.body.appendChild(Element);
+document.documentElement.appendChild(Element);
 
 ReactDOM.render(
   <Index />,
