@@ -8,17 +8,19 @@ const useAdminActions = ({ playlist, admin }) => {
 
   const updatePlayerState = useCallback(() => {
     const vid = document.querySelector("video");
-    const currentSongStartedTimestamp = new Date().getTime();
-    const currentSongPlaybackSecond = parseInt(vid.currentTime);
+    if (vid) {
+      const currentSongStartedTimestamp = new Date().getTime();
+      const currentSongPlaybackSecond = parseInt(vid.currentTime);
 
-    updatePlaylist({
-      variables: {
-        id,
-        currentIndex,
-        currentSongStartedTimestamp,
-        currentSongPlaybackSecond,
-      },
-    });
+      updatePlaylist({
+        variables: {
+          id,
+          currentIndex,
+          currentSongStartedTimestamp,
+          currentSongPlaybackSecond,
+        },
+      });
+    }
   }, [id, currentIndex]);
 
   const goToNextSong = useCallback(() => {

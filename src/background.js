@@ -26,12 +26,13 @@ const onPartyJoined = async ({ payload, sendResponse, tabId }) => {
 };
 
 const handleTabLoad = async ({ tabId, playlist }) => {
+  console.log({ tabId, partyTabId });
   if (partyTabId === tabId) {
     handlePlaylistUpdate(playlist, tabId);
   }
   if (!partyTabId) {
     partyTabId = tabId;
-    handlePlaylistUpdate(playlist, partyTabId);
+    handlePlaylistUpdate(playlist, tabId);
     subscriber = client
       .subscribe({
         query: PLAYLIST_UPDATED,
@@ -52,7 +53,9 @@ const handlePlaylistUpdate = ({ tracks, currentIndex }, tabId) => {
   const track = tracks[currentIndex];
   if (track) {
     browser.tabs.query({ url: track.url }, (tabs) => {
+      console.log({ tabs, track });
       if (!tabs.length) {
+        console.log(track.url);
         browser.tabs.update(tabId, { url: track.url });
       }
     });
@@ -106,40 +109,38 @@ browser.runtime.onMessage.addListener(function (
 });
 
 // on loading tab
-browser.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-  if (changeInfo.status == "complete") {
-    const url = new URL(tab.url);
-    if (url.host.includes("youtube")) {
-      browser.pageAction.show(tabId);
+browser.webNavigation.onCompleted.addListener(function ({ url, tabId }) {
+  url = new URL(url);
+  if (url.host.includes("youtube")) {
+    browser.pageAction.show(tabId);
 
-      browser.storage.local.get(["party"], async (result) => {
-        const storedParty = result?.party;
-        const playlistId = url.searchParams.get("playlistPartyId");
+    browser.storage.local.get(["party"], async (result) => {
+      const storedParty = result?.party;
+      const playlistId = url.searchParams.get("playlistPartyId");
 
-        if (!storedParty && playlistId) {
+      if (!storedParty && playlistId) {
+        showPartyConsole({ tabId });
+        return;
+      }
+      if (storedParty) {
+        if (playlistId && storedParty.playlist.id !== playlistId) {
+          // joining a new party, so first leave this one
+          await onLeaveParty({ tabId });
+        }
+        // start content script when page is loaded and we have a party
+        let { data } = await client.query({
+          query: PLAYLIST,
+          variables: { id: storedParty.playlist.id },
+        });
+
+        if (data) {
           showPartyConsole({ tabId });
-          return;
+          handleTabLoad({ playlist: data.playlist, tabId });
         }
-        if (storedParty) {
-          if (playlistId && storedParty.playlist.id !== playlistId) {
-            // joining a new party, so first leave this one
-            await onLeaveParty({ tabId });
-          }
-          // start content script when page is loaded and we have a party
-          let { data } = await client.query({
-            query: PLAYLIST,
-            variables: { id: storedParty.playlist.id },
-          });
-
-          if (data) {
-            showPartyConsole({ tabId });
-            handleTabLoad({ playlist: data.playlist, tabId });
-          }
-        }
-      });
-    } else {
-      browser.pageAction.hide(tabId);
-    }
+      }
+    });
+  } else {
+    browser.pageAction.hide(tabId);
   }
 });
 

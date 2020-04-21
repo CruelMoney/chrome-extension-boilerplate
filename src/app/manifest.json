@@ -18,7 +18,7 @@
     "https://youtube-party-playlist.cude.io/*",
     "activeTab",
     "tabs",
-    "declarativeContent"
+    "webNavigation"
   ],
   "page_action": {
     "default_icon": {

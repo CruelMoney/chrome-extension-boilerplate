@@ -20,7 +20,7 @@ const InnerContent = () => {
   const [party, setParty] = useState();
 
   useEffect(() => {
-    chrome.storage.local.get(["party"], function (result) {
+    browser.storage.local.get(["party"], function (result) {
       setParty(result?.party);
     });
   }, []);
@@ -57,7 +57,7 @@ const CreatePartyButton = ({ party }) => {
     });
 
     if (playlistdata) {
-      chrome.runtime.sendMessage({
+      browser.runtime.sendMessage({
         type: "PARTY_STARTED",
         payload: playlistdata.joinParty,
       });
