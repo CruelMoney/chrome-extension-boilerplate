@@ -14,8 +14,7 @@
   "permissions": [
     "storage",
     "https://www.youtube.com/*",
-    "wss://youtube-party-playlist.cude.io/*",
-    "https://youtube-party-playlist.cude.io/*",
+    "*://youtube-party-playlist.cude.io/*",
     "activeTab",
     "tabs",
     "webNavigation"
@@ -28,5 +27,5 @@
     "default_title": "Start YouTube Party",
     "default_popup": "popup.html"
   },
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+  "content_security_policy": "script-src 'self'; object-src 'self'"
 }
