@@ -21,9 +21,6 @@
       "pre-commit": "pretty-quick --staged"
     }
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",
