@@ -10,6 +10,11 @@ import {
 import UsersSection from "./UsersSection";
 import useGuestActions from "./useGuestActions";
 import useAdminActions from "./useAdminActions";
+import {
+  ToastsContainer,
+  ToastsContainerPosition,
+  ToastsStore,
+} from "react-toasts";
 
 const SideBar = ({ party }) => {
   let { data, error } = useQuery(PLAYLIST, {
@@ -69,6 +74,10 @@ const SideBar = ({ party }) => {
         <EmptyPlaylist />
       )}
       <CreatedBySection />
+      <ToastsContainer
+        position={ToastsContainerPosition.BOTTOM_CENTER}
+        store={ToastsStore}
+      />
     </div>
   );
 };
@@ -79,6 +88,7 @@ const NextUpSection = ({ ...props }) => {
       <h2>Up next:</h2>
       <div className=" next-up">
         <Tracks {...props} />
+        <div style={{ height: "40px" }}></div>
       </div>
     </div>
   );
@@ -95,12 +105,12 @@ const CreatedBySection = ({ ...props }) => {
 };
 
 const EmptyPlaylist = () => {
-  const imgUrl = browser.runtime.getURL("images/howto.png");
+  const imgUrl = window.browser.runtime.getURL("images/howto.png");
   return (
     <div className="section empty-playlist">
       <p>
-        No tracks added to the playlist. Add more tracks by clicking on the
-        action button next to a video.
+        No tracks added to the playlist. Click on any video to add it to the
+        playlist.
       </p>
       <img src={imgUrl} />
     </div>
