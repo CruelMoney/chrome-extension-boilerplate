@@ -23,7 +23,7 @@ const DataWrapper = () => {
   const [party, setParty] = useState();
 
   useEffect(() => {
-    browser.storage.local.get(["party"], function (result) {
+    chrome.storage.local.get(["party"], function (result) {
       setParty(result.party);
     });
   }, []);

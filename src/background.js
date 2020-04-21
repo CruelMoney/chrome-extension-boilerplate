@@ -6,21 +6,21 @@ let partyTabId = null;
 let subscriber = null;
 
 const showPartyConsole = ({ tabId }) => {
-  browser.tabs.executeScript(tabId, {
+  chrome.tabs.executeScript(tabId, {
     file: "content_script.bundle.js",
   });
-  browser.tabs.insertCSS(tabId, { file: "content_script.css" });
+  chrome.tabs.insertCSS(tabId, { file: "content_script.css" });
 };
 
 const onPartyStarted = ({ payload, sendResponse, tabId }) => {
-  browser.storage.local.set({ party: { ...payload, admin: true } });
+  chrome.storage.local.set({ party: { ...payload, admin: true } });
   showPartyConsole({ tabId });
   sendResponse && sendResponse(true);
 };
 
 const onPartyJoined = async ({ payload, sendResponse, tabId }) => {
   if (payload) {
-    browser.storage.local.set({ party: payload });
+    chrome.storage.local.set({ party: payload });
     handleTabLoad({ tabId, playlist: payload.playlist });
   }
 };
@@ -52,11 +52,11 @@ const handleTabLoad = async ({ tabId, playlist }) => {
 const handlePlaylistUpdate = ({ tracks, currentIndex }, tabId) => {
   const track = tracks[currentIndex];
   if (track) {
-    browser.tabs.query({ url: track.url }, (tabs) => {
+    chrome.tabs.query({ url: track.url }, (tabs) => {
       console.log({ tabs, track });
       if (!tabs.length) {
         console.log(track.url);
-        browser.tabs.update(tabId, { url: track.url });
+        chrome.tabs.update(tabId, { url: track.url });
       }
     });
   }
@@ -64,10 +64,10 @@ const handlePlaylistUpdate = ({ tracks, currentIndex }, tabId) => {
 
 const onLeaveParty = ({ payload, tabId, sendResponse }) => {
   return new Promise((resolve, reject) => {
-    browser.storage.local.get(["party"], async (result) => {
+    chrome.storage.local.get(["party"], async (result) => {
       console.log({ result });
       if (result?.party) {
-        browser.storage.local.remove("party");
+        chrome.storage.local.remove("party");
         partyTabId = null;
         if (subscriber) {
           subscriber.unsubscribe();
@@ -95,13 +95,13 @@ const MESSAGE_HANDLERS = {
   JOIN_PARTY: onPartyJoined,
 };
 
-browser.runtime.onMessage.addListener(function (
+chrome.runtime.onMessage.addListener(function (
   { type, payload, ...rest },
   sender,
   sendResponse
 ) {
   const fun = MESSAGE_HANDLERS[type];
-  browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     if (fun) {
       fun({ payload, sendResponse, tabId: sender.tab?.id || tabs[0].id });
     }
@@ -109,12 +109,12 @@ browser.runtime.onMessage.addListener(function (
 });
 
 // on loading tab
-browser.webNavigation.onCompleted.addListener(function ({ url, tabId }) {
+chrome.webNavigation.onCompleted.addListener(function ({ url, tabId }) {
   url = new URL(url);
   if (url.host.includes("youtube")) {
-    browser.pageAction.show(tabId);
+    chrome.pageAction.show(tabId);
 
-    browser.storage.local.get(["party"], async (result) => {
+    chrome.storage.local.get(["party"], async (result) => {
       const storedParty = result?.party;
       const playlistId = url.searchParams.get("playlistPartyId");
 
@@ -140,11 +140,11 @@ browser.webNavigation.onCompleted.addListener(function ({ url, tabId }) {
       }
     });
   } else {
-    browser.pageAction.hide(tabId);
+    chrome.pageAction.hide(tabId);
   }
 });
 
-browser.tabs.onRemoved.addListener((tabId) => {
+chrome.tabs.onRemoved.addListener((tabId) => {
   if (tabId === partyTabId) {
     partyTabId = null;
     if (subscriber) {

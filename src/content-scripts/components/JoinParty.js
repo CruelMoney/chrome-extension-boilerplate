@@ -16,7 +16,7 @@ const JoinParty = ({ onJoined }) => {
   const [join] = useMutation(JOIN_PARTY, {
     variables: { name, id: playlistId },
     onCompleted: (data) => {
-      browser.runtime.sendMessage({
+      chrome.runtime.sendMessage({
         type: "JOIN_PARTY",
         payload: data.joinParty,
       });

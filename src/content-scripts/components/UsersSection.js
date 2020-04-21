@@ -1,7 +1,7 @@
 import React from "react";
 
 const UsersSection = ({ users = [], style }) => {
-  const picUrl = browser.runtime.getURL("images/empty_profile_picture.png");
+  const picUrl = chrome.runtime.getURL("images/empty_profile_picture.png");
 
   return (
     <div className="section colored" style={style}>

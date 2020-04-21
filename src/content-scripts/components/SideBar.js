@@ -105,7 +105,7 @@ const CreatedBySection = ({ ...props }) => {
 };
 
 const EmptyPlaylist = () => {
-  const imgUrl = browser.runtime.getURL("images/howto.png");
+  const imgUrl = chrome.runtime.getURL("images/howto.png");
   return (
     <div className="section empty-playlist">
       <p>
