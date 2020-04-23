@@ -27,7 +27,6 @@ const onPartyJoined = async ({ payload, sendResponse, tabId }) => {
 };
 
 const handleTabLoad = async ({ tabId, playlist }) => {
-  console.log({ tabId, partyTabId });
   if (partyTabId === tabId) {
     handlePlaylistUpdate(playlist, tabId);
   }
@@ -41,8 +40,8 @@ const handleTabLoad = async ({ tabId, playlist }) => {
       })
       .subscribe({
         next: ({ data }) => {
-          console.log({ data });
           const playlist = data?.playlistUpdated;
+          console.log("Update from subscription");
           if (playlist) {
             handlePlaylistUpdate(playlist, tabId);
           }
@@ -55,9 +54,8 @@ const handlePlaylistUpdate = ({ tracks, currentIndex }, tabId) => {
   const track = tracks[currentIndex];
   if (track) {
     chrome.tabs.query({ url: track.url }, (tabs) => {
-      console.log({ tabs, track });
       if (!tabs.length) {
-        console.log(track.url);
+        console.log({ tracks, track, tabId, tabs, currentIndex });
         chrome.tabs.update(tabId, { url: track.url });
       }
     });
@@ -67,7 +65,6 @@ const handlePlaylistUpdate = ({ tracks, currentIndex }, tabId) => {
 const onLeaveParty = ({ payload, tabId, sendResponse }) => {
   return new Promise((resolve, reject) => {
     chrome.storage.local.get(["party"], async (result) => {
-      console.log({ result });
       if (result?.party) {
         chrome.storage.local.remove("party");
         partyTabId = null;
@@ -112,9 +109,9 @@ chrome.runtime.onMessage.addListener(function (
 
 // on loading tab
 chrome.webNavigation.onCompleted.addListener(function ({ url, tabId }) {
-  console.log({ url });
   url = new URL(url);
   if (url.host.includes("youtube") || tabId === partyTabId) {
+    chrome.pageAction.show(tabId);
     chrome.storage.local.get(["party"], async (result) => {
       const storedParty = result?.party;
       const playlistId = url.searchParams.get("playlistPartyId");
@@ -140,6 +137,8 @@ chrome.webNavigation.onCompleted.addListener(function ({ url, tabId }) {
         }
       }
     });
+  } else {
+    chrome.pageAction.hide(tabId);
   }
 });
 
