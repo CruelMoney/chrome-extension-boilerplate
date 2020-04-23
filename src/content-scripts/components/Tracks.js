@@ -137,7 +137,7 @@ export const CurrentTrack = ({
               admin
                 ? skipSong
                 : () => {
-                    ToastsStore.info(
+                    ToastsStore.success(
                       "Only the person that added the song can skip it ☝️"
                     );
                   }
