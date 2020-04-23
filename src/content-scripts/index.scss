@@ -31,6 +31,48 @@ ytd-app {
   }
 }
 
+.secondary-button {
+  font-weight: 600;
+  font-size: 15px;
+  color: rgb(77, 100, 128);
+  text-align: center;
+  line-height: 20px;
+  cursor: pointer;
+  min-width: 150px;
+  height: 40px;
+  white-space: nowrap;
+  display: block;
+  text-overflow: ellipsis;
+  max-width: 200px;
+  position: relative;
+  background: transparent;
+  border-radius: 4px;
+  border-width: initial;
+  border-style: none;
+  border-color: initial;
+  border-image: initial;
+  padding: 0px 1em;
+  overflow: hidden;
+  outline: none;
+}
+
+.secondary-button:hover {
+  background: rgb(246, 248, 249);
+}
+
+.add-track-button {
+  background: #e5e5e5;
+  font-size: 1.2em;
+  height: 2.2em;
+  margin: 10px 0px;
+  color: #111;
+}
+
+.add-track-button:hover {
+  opacity: 0.75;
+  background: #e5e5e5;
+}
+
 #party-sidebar {
   position: fixed;
   right: 0;
@@ -132,35 +174,6 @@ ytd-app {
     border-image: initial;
     padding: 0px 1em;
     overflow: hidden;
-  }
-
-  .secondary-button {
-    font-weight: 600;
-    font-size: 15px;
-    color: rgb(77, 100, 128);
-    text-align: center;
-    line-height: 20px;
-    cursor: pointer;
-    min-width: 150px;
-    height: 40px;
-    white-space: nowrap;
-    display: block;
-    text-overflow: ellipsis;
-    max-width: 200px;
-    position: relative;
-    background: transparent;
-    border-radius: 4px;
-    border-width: initial;
-    border-style: none;
-    border-color: initial;
-    border-image: initial;
-    padding: 0px 1em;
-    overflow: hidden;
-    outline: none;
-  }
-
-  .secondary-button:hover {
-    background: rgb(246, 248, 249);
   }
 
   .section.colored {

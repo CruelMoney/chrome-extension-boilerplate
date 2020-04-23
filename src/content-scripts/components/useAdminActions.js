@@ -4,7 +4,8 @@ import { UPDATE_PLAYLIST } from "../../gql";
 
 const useAdminActions = ({ playlist, admin }) => {
   const [updatePlaylist, { error }] = useMutation(UPDATE_PLAYLIST);
-  const { id, currentIndex, currentSongStartedTimestamp } = playlist || {};
+  const { id, currentIndex, currentSongStartedTimestamp, tracks } =
+    playlist || {};
 
   const updatePlayerState = useCallback(() => {
     const vid = document.querySelector("video");
@@ -21,19 +22,22 @@ const useAdminActions = ({ playlist, admin }) => {
         },
       });
     }
-  }, [id, currentIndex]);
+  }, [id, currentIndex, updatePlaylist]);
 
   const goToNextSong = useCallback(() => {
     const currentSongStartedTimestamp = new Date().getTime();
+
+    const nextIdx = Math.min(tracks.length - 1, currentIndex + 1);
+
     updatePlaylist({
       variables: {
         id,
-        currentIndex: currentIndex + 1,
+        currentIndex: nextIdx,
         currentSongStartedTimestamp,
         currentSongPlaybackSecond: 0,
       },
     });
-  }, [id, currentIndex]);
+  }, [id, currentIndex, updatePlaylist, tracks]);
 
   useEffect(() => {
     if (id && !currentSongStartedTimestamp) {
@@ -55,7 +59,7 @@ const useAdminActions = ({ playlist, admin }) => {
         };
       }
     }
-  }, [id, admin, updatePlayerState]);
+  }, [id, admin, updatePlayerState, goToNextSong]);
 };
 
 export default useAdminActions;

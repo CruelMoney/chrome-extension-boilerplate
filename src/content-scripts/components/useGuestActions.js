@@ -13,6 +13,8 @@ const useGuestActions = ({ playlist, userId }) => {
     admin,
   } = playlist || {};
 
+  console.log({ playlist });
+
   useAddHandlersToButtons({ id, userId });
 
   // update player to current playback state
@@ -59,46 +61,59 @@ const getNodeTrackTitle = (node) => {
   return null;
 };
 
+const getNodeTrackUrl = (node) => {
+  const parent = node.closest("#dismissable") || node.closest("#content");
+  if (parent) {
+    const urlNode = parent.querySelector("[href^='/watch']");
+    if (urlNode) {
+      let urlObject = new URL("https://www.youtube.com" + urlNode.href);
+      const videoId = urlObject.searchParams.get("v");
+      urlObject = new URL("https://www.youtube.com/watch");
+      urlObject.searchParams.set("v", videoId);
+      return urlObject.href;
+    }
+  }
+
+  return null;
+};
+
 const useAddHandlersToButtons = ({ id, userId }) => {
-  const [addTrack] = useMutation(ADD_TRACK, { onError: console.log });
+  const [addTrack] = useMutation(ADD_TRACK, {
+    onError: (error) => {
+      console.log(error);
+      ToastsStore.error("Something went wrong");
+    },
+    onCompleted: () => ToastsStore.success("Added track"),
+  });
 
   const addListenersToRoot = useCallback(() => {
     forceTheaterMode();
 
-    const links = document.querySelectorAll("[href^='/watch']");
-    links.forEach((node) => {
-      node.onclick = (e) => {
+    const nodes = document.querySelectorAll("#metadata");
+
+    nodes.forEach((node) => {
+      let hasButton = node.querySelector(".add-track-button");
+      if (!hasButton) {
+        const button = document.createElement("button");
+        button.className = "add-track-button secondary-button";
+        button.innerText = "Add to party playlist";
+        node.appendChild(button);
+        hasButton = button;
+      }
+      const url = getNodeTrackUrl(node);
+      const name = getNodeTrackTitle(node);
+      hasButton.onclick = (e) => {
         e.preventDefault();
         e.stopImmediatePropagation();
 
-        try {
-          const url = node.getAttribute("href");
-          if (url) {
-            let urlObject = new URL("https://www.youtube.com" + url);
-            const videoId = urlObject.searchParams.get("v");
-            urlObject = new URL("https://www.youtube.com/watch");
-            urlObject.searchParams.set("v", videoId);
-
-            const name = getNodeTrackTitle(node);
-
-            console.log(urlObject.href);
-
-            addTrack({
-              variables: {
-                id,
-                url: urlObject.href,
-                name,
-                user: userId,
-              },
-            });
-            ToastsStore.success("Added " + name);
-          } else {
-            throw new Error("Url not found for track");
-          }
-        } catch (error) {
-          console.log(error);
-          ToastsStore.warning("Couldn't add track");
-        }
+        addTrack({
+          variables: {
+            id,
+            url,
+            name,
+            user: userId,
+          },
+        });
       };
     });
   }, [id, addTrack, userId]);
