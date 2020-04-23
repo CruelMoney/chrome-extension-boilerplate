@@ -38,6 +38,7 @@ const Tracks = ({ tracks, user, playlistId, admin }) => {
           key={key}
           style={{
             position: "absolute",
+            width: "100%",
             zIndex: tracks.length - index,
             transform: y.interpolate((y) => `translate3d(0,${y}px,0)`),
             ...rest,
