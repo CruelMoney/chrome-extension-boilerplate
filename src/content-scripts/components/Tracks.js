@@ -3,6 +3,7 @@ import { useTransition, animated } from "react-spring";
 import { useMutation } from "@apollo/client";
 import { REMOVE_TRACK, VOTE, REMOVE_VOTE } from "../../gql";
 import useAdminActions from "./useAdminActions";
+import { ToastsStore } from "react-toasts";
 
 const UpvoteButton = ({ votes, hasVoted, ...props }) => {
   return (
@@ -129,12 +130,23 @@ export const CurrentTrack = ({
   const isOwn = addedBy && user && user.id === addedBy.id;
 
   return (
-    <div className={"row track" + (isOwn ? " is-owner " : "")}>
+    <div className={"row track is-owner"}>
       <div className="row">
         <img className="thumbnail" src={thumbnail}></img>
         <p>{name || url}</p>
         <div className="remove-button-wrapper">
-          <button className="remove-button primary-button" onClick={skipSong}>
+          <button
+            className="remove-button primary-button"
+            onClick={
+              isOwn
+                ? skipSong
+                : () => {
+                    ToastsStore.info(
+                      "Only the person that added the song can skip it ☝️"
+                    );
+                  }
+            }
+          >
             Skip
           </button>
         </div>
