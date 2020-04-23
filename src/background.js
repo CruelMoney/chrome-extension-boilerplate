@@ -110,10 +110,9 @@ chrome.runtime.onMessage.addListener(function (
 
 // on loading tab
 chrome.webNavigation.onCompleted.addListener(function ({ url, tabId }) {
+  console.log({ url });
   url = new URL(url);
-  if (url.host.includes("youtube")) {
-    chrome.pageAction.show(tabId);
-
+  if (url.host.includes("youtube") || tabId === partyTabId) {
     chrome.storage.local.get(["party"], async (result) => {
       const storedParty = result?.party;
       const playlistId = url.searchParams.get("playlistPartyId");
@@ -139,8 +138,6 @@ chrome.webNavigation.onCompleted.addListener(function ({ url, tabId }) {
         }
       }
     });
-  } else {
-    chrome.pageAction.hide(tabId);
   }
 });
 

@@ -25,7 +25,8 @@
       "38": "images/icon-38.png"
     },
     "default_title": "Start YouTube Party",
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "show_matches": ["https://*.youtube.com/*"]
   },
-  "content_security_policy": "script-src 'self'; object-src 'self'"
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
 }

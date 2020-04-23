@@ -112,7 +112,10 @@ const EmptyPlaylist = () => {
         No tracks added to the playlist. Click on any video to add it to the
         playlist.
       </p>
-      <img src={imgUrl} />
+      <div className="relative">
+        <img src={imgUrl} />
+        <div className="tappable" />
+      </div>
     </div>
   );
 };
@@ -177,8 +180,6 @@ const Track = ({
   const thumbnail = `https://i.ytimg.com/vi/${url
     .split("watch?v=")
     .pop()}/default.jpg`;
-
-  console.log({ user, addedBy });
 
   const isOwn = addedBy && user && user.id === addedBy.id;
 

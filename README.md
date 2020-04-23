@@ -3,6 +3,9 @@
 ## Requirements
 
 - Yarn v1.21.1 (any version >=1.2 should work)
+- Node v12
+
+The extension was developed on macOS 10.15.4.
 
 ### Create production build
 
