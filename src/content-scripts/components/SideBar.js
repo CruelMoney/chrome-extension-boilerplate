@@ -184,7 +184,11 @@ const Track = ({
   const isOwn = addedBy && user && user.id === addedBy.id;
 
   return (
-    <li className={"row track" + (isOwn ? " is-owner " : "")} {...props}>
+    <li
+      className={"row track" + (isOwn ? " is-owner " : "")}
+      {...props}
+      data-url={url}
+    >
       <div className="row">
         <img className="thumbnail" src={thumbnail}></img>
         <p>{name || url}</p>

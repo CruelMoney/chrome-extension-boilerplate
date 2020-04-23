@@ -15,6 +15,7 @@ const showPartyConsole = ({ tabId }) => {
 const onPartyStarted = ({ payload, sendResponse, tabId }) => {
   chrome.storage.local.set({ party: { ...payload, admin: true } });
   showPartyConsole({ tabId });
+  handleTabLoad({ tabId, playlist: payload.playlist });
   sendResponse && sendResponse(true);
 };
 
@@ -40,6 +41,7 @@ const handleTabLoad = async ({ tabId, playlist }) => {
       })
       .subscribe({
         next: ({ data }) => {
+          console.log({ data });
           const playlist = data?.playlistUpdated;
           if (playlist) {
             handlePlaylistUpdate(playlist, tabId);

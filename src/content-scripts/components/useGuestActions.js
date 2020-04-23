@@ -46,7 +46,7 @@ const useGuestActions = ({ playlist, userId }) => {
 };
 
 const getNodeTrackTitle = (node) => {
-  const parent = node.closest("#dismissable");
+  const parent = node.closest("#dismissable") || node.closest("#content");
   if (parent) {
     const titleNode =
       parent.querySelector("#video-title") ||
@@ -71,18 +71,31 @@ const useAddHandlersToButtons = ({ id, userId }) => {
 
         try {
           const url = node.getAttribute("href");
-          const name = getNodeTrackTitle(node);
-          addTrack({
-            variables: {
-              id,
-              url: "https://www.youtube.com" + url,
-              name,
-              user: userId,
-            },
-          });
-          ToastsStore.success("Added " + name);
+          if (url) {
+            let urlObject = new URL("https://www.youtube.com" + url);
+            const videoId = urlObject.searchParams.get("v");
+            urlObject = new URL("https://www.youtube.com/watch");
+            urlObject.searchParams.set("v", videoId);
+
+            const name = getNodeTrackTitle(node);
+
+            console.log(urlObject.href);
+
+            addTrack({
+              variables: {
+                id,
+                url: urlObject.href,
+                name,
+                user: userId,
+              },
+            });
+            ToastsStore.success("Added " + name);
+          } else {
+            throw new Error("Url not found for track");
+          }
         } catch (error) {
           console.log(error);
+          ToastsStore.warning("Couldn't add track");
         }
       };
     });
