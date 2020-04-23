@@ -8,6 +8,7 @@ module.exports = (env, options) => {
   return {
     entry: {
       content_script: "./src/content-scripts/App.jsx",
+      change_title: "./src/content-scripts/changeTitle.js",
       background: "./src/background.js",
       popup: "./src/popup-page/App.jsx",
       option: "./src/option-page/App.jsx",

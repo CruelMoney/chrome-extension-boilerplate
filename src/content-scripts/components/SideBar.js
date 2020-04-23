@@ -12,7 +12,7 @@ import {
 import Tracks, { CurrentTrack } from "./Tracks";
 
 const SideBar = ({ party }) => {
-  let { data, error } = useQuery(PLAYLIST, {
+  let { data } = useQuery(PLAYLIST, {
     variables: { id: party.playlist.id },
   });
 
@@ -20,12 +20,21 @@ const SideBar = ({ party }) => {
     variables: { id: party.playlist.id },
   });
 
-  const { user, admin } = party;
+  const { user } = party;
   data = {
     ...data,
     ...subscriptionData,
   };
   const playlist = data?.playlist;
+  const { tracks = [], id, url, currentIndex, users = [] } = playlist || {};
+
+  const currentTrack = tracks[currentIndex];
+  const upcomingTracks = tracks.slice(currentIndex + 1);
+
+  const admin =
+    currentTrack?.addedBy?.id &&
+    user?.id &&
+    currentTrack.addedBy.id === user.id;
 
   const { goToNextSong } = useAdminActions({ playlist, admin });
   useGuestActions({ playlist, admin, userId: user?.id });
@@ -33,11 +42,6 @@ const SideBar = ({ party }) => {
   if (!playlist) {
     return null;
   }
-
-  const { tracks = [], id, url, currentIndex, users = [] } = playlist;
-
-  const currentTrack = tracks[currentIndex];
-  const upcomingTracks = tracks.slice(currentIndex + 1);
 
   return (
     <div id={"side-bar-content"}>

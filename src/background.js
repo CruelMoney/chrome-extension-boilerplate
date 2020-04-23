@@ -1,9 +1,10 @@
 import "@babel/polyfill";
 import { client } from "./ConnectBackend";
-import { JOIN_PARTY, PLAYLIST_UPDATED, LEAVE_PARTY, PLAYLIST } from "./gql";
+import { PLAYLIST_UPDATED, LEAVE_PARTY, PLAYLIST } from "./gql";
 
 let partyTabId = null;
 let subscriber = null;
+let isInsideParty = false;
 
 const showPartyConsole = ({ tabId }) => {
   chrome.tabs.executeScript(tabId, {
@@ -12,8 +13,14 @@ const showPartyConsole = ({ tabId }) => {
   chrome.tabs.insertCSS(tabId, { file: "content_script.css" });
 };
 
+const changeTabTitle = ({ tabId }) => {
+  chrome.tabs.executeScript(tabId, {
+    file: "change_title.bundle.js",
+  });
+};
+
 const onPartyStarted = ({ payload, sendResponse, tabId }) => {
-  chrome.storage.local.set({ party: { ...payload, admin: true } });
+  chrome.storage.local.set({ party: { ...payload, didStartParty: true } });
   showPartyConsole({ tabId });
   handleTabLoad({ tabId, playlist: payload.playlist });
   sendResponse && sendResponse(true);
@@ -29,9 +36,11 @@ const onPartyJoined = async ({ payload, sendResponse, tabId }) => {
 const handleTabLoad = async ({ tabId, playlist }) => {
   if (partyTabId === tabId) {
     handlePlaylistUpdate(playlist, tabId);
+    changeTabTitle({ tabId });
   }
   if (!partyTabId) {
     partyTabId = tabId;
+    changeTabTitle({ tabId });
     handlePlaylistUpdate(playlist, tabId);
     subscriber = client
       .subscribe({
@@ -133,7 +142,7 @@ chrome.webNavigation.onCompleted.addListener(function ({ url, tabId }) {
 
         if (data) {
           showPartyConsole({ tabId });
-          handleTabLoad({ playlist: data.playlist, tabId });
+          handleTabLoad({ playlist: data.playlist, tabId, url });
         }
       }
     });
