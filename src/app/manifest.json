@@ -1,8 +1,8 @@
 {
-  "name": "YouTube Playlist Party",
+  "name": "YouTube Party Playlist",
   "version": "1.0.2",
   "manifest_version": 2,
-  "description": "Have a party with your friends on YouTube",
+  "description": "Watch videos or play music in sync with your friends.",
   "icons": {
     "16": "images/icon-16.png",
     "128": "images/icon-128.png"
