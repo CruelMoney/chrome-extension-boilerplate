@@ -1,10 +1,6 @@
 ytd-app {
   right: 400px !important;
 
-  .ytp-chrome-bottom {
-    max-width: 900px !important;
-  }
-
   ytd-watch-flexy[flexy_][is-two-columns_] #columns.ytd-watch-flexy {
     min-width: 0 !important;
   }
@@ -25,16 +21,9 @@ ytd-app {
     min-width: 0 !important;
   }
 
-  .html5-video-player .video-click-tracking,
-  .html5-video-player .video-stream {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-  }
-
-  .html5-video-container {
-    width: 100% !important;
-    height: 100% !important;
+  ytd-watch-flexy[flexy_][is-two-columns_]:not([is-four-three-to-sixteen-nine-video_]):not([is-extra-wide-video_])
+    #primary.ytd-watch-flexy {
+    min-width: 0 !important;
   }
 
   ytd-secondary-search-container-renderer {

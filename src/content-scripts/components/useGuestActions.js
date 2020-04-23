@@ -63,6 +63,8 @@ const useAddHandlersToButtons = ({ id, userId }) => {
   const [addTrack] = useMutation(ADD_TRACK, { onError: console.log });
 
   const addListenersToRoot = useCallback(() => {
+    forceTheaterMode();
+
     const links = document.querySelectorAll("[href^='/watch']");
     links.forEach((node) => {
       node.onclick = (e) => {
@@ -113,6 +115,23 @@ const useAddHandlersToButtons = ({ id, userId }) => {
       observer.disconnect();
     };
   }, [addListenersToRoot]);
+};
+
+let hasResized = false;
+
+const forceTheaterMode = () => {
+  const player = document.querySelector("ytd-watch-flexy");
+
+  if (player) {
+    const button = player.querySelector(".ytp-size-button");
+    if (button) {
+      const theaterRequested = player.getAttribute("theater-requested_");
+      if (theaterRequested === null || !hasResized) {
+        button.click();
+        hasResized = true;
+      }
+    }
+  }
 };
 
 export default useGuestActions;
