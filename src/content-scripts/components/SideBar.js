@@ -31,10 +31,12 @@ const SideBar = ({ party }) => {
   const currentTrack = tracks[currentIndex];
   const upcomingTracks = tracks.slice(currentIndex + 1);
 
+  // admin if has added song, or the person that added the song has left
   const admin =
-    currentTrack?.addedBy?.id &&
-    user?.id &&
-    currentTrack.addedBy.id === user.id;
+    (currentTrack?.addedBy?.id &&
+      user?.id &&
+      currentTrack.addedBy.id === user.id) ||
+    !users?.some((u) => u.id === currentTrack?.addedBy?.id);
 
   const { goToNextSong } = useAdminActions({ playlist, admin });
   const { notOnPartyUrl } = useGuestActions({
@@ -76,6 +78,7 @@ const SideBar = ({ party }) => {
             {...currentTrack}
             skipSong={goToNextSong}
             user={user}
+            admin={admin}
           ></CurrentTrack>
         </div>
       )}

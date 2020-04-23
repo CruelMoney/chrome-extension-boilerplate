@@ -4,7 +4,6 @@ import { PLAYLIST_UPDATED, LEAVE_PARTY, PLAYLIST } from "./gql";
 
 let partyTabId = null;
 let subscriber = null;
-let isInsideParty = false;
 
 const showPartyConsole = ({ tabId }) => {
   chrome.tabs.executeScript(tabId, {
@@ -22,25 +21,26 @@ const changeTabTitle = ({ tabId }) => {
 const onPartyStarted = ({ payload, sendResponse, tabId }) => {
   chrome.storage.local.set({ party: { ...payload, didStartParty: true } });
   showPartyConsole({ tabId });
-  handleTabLoad({ tabId, playlist: payload.playlist });
+  handleTabLoad({ tabId, playlist: payload.playlist, shouldGoToParty: true });
   sendResponse && sendResponse(true);
 };
 
 const onPartyJoined = async ({ payload, sendResponse, tabId }) => {
   if (payload) {
     chrome.storage.local.set({ party: payload });
-    handleTabLoad({ tabId, playlist: payload.playlist });
+    handleTabLoad({ tabId, playlist: payload.playlist, shouldGoToParty: true });
   }
 };
 
-const handleTabLoad = async ({ tabId, playlist }) => {
+const handleTabLoad = async ({ tabId, playlist, shouldGoToParty }) => {
   if (partyTabId === tabId) {
+    redirectToPartyTab(playlist, tabId, shouldGoToParty);
     changeTabTitle({ tabId });
   }
   if (!partyTabId) {
     partyTabId = tabId;
     changeTabTitle({ tabId });
-    handlePlaylistUpdate(playlist, tabId);
+    redirectToPartyTab(playlist, tabId, shouldGoToParty);
     subscriber = client
       .subscribe({
         query: PLAYLIST_UPDATED,
@@ -50,19 +50,29 @@ const handleTabLoad = async ({ tabId, playlist }) => {
         next: ({ data }) => {
           const playlist = data?.playlistUpdated;
           if (playlist) {
-            handlePlaylistUpdate(playlist, tabId);
+            redirectToPartyTab(playlist, tabId);
           }
         },
       });
   }
 };
 
-const handlePlaylistUpdate = ({ tracks, currentIndex }, tabId) => {
+const redirectToPartyTab = (
+  { tracks, currentIndex },
+  tabId,
+  shouldGoToParty
+) => {
+  const lastTrack = tracks[currentIndex - 1];
   const track = tracks[currentIndex];
   if (track) {
-    chrome.tabs.query({ url: track.url }, (tabs) => {
-      if (!tabs.length) {
-        chrome.tabs.update(tabId, { url: track.url });
+    chrome.tabs.get(tabId, (tab) => {
+      const isOnLastSong = tab && tab.url === lastTrack?.url;
+      if (shouldGoToParty || isOnLastSong) {
+        chrome.tabs.query({ url: track.url }, (tabs) => {
+          if (!tabs.length) {
+            chrome.tabs.update(tabId, { url: track.url });
+          }
+        });
       }
     });
   }
@@ -154,7 +164,12 @@ chrome.tabs.onRemoved.addListener((tabId) => {
     if (subscriber) {
       subscriber.unsubscribe();
     }
-    // leave party
-    onLeaveParty({ tabId });
   }
+
+  // leave party if no youtube tabs left
+  chrome.tabs.query({ url: "*://*.youtube.com/*" }, (tabs) => {
+    if (!tabs.length) {
+      onLeaveParty({ tabId });
+    }
+  });
 });

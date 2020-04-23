@@ -116,17 +116,14 @@ const Track = ({
 export const CurrentTrack = ({
   skipSong,
   name,
-  addedBy,
-  user,
   url,
   votes,
   hasVoted,
+  admin,
 }) => {
   const thumbnail = `https://i.ytimg.com/vi/${url
     .split("watch?v=")
     .pop()}/default.jpg`;
-
-  const isOwn = addedBy && user && user.id === addedBy.id;
 
   return (
     <div className={"row track is-owner"}>
@@ -137,7 +134,7 @@ export const CurrentTrack = ({
           <button
             className="remove-button primary-button"
             onClick={
-              isOwn
+              admin
                 ? skipSong
                 : () => {
                     ToastsStore.info(
