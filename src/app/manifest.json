@@ -1,6 +1,6 @@
 {
   "name": "YouTube Party Playlist",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "manifest_version": 2,
   "description": "Watch videos or play music in sync with your friends.",
   "icons": {
@@ -28,5 +28,5 @@
     "default_popup": "popup.html",
     "show_matches": ["https://*.youtube.com/*"]
   },
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+  "content_security_policy": "script-src 'self'; object-src 'self'"
 }
