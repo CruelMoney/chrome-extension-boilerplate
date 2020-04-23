@@ -37,11 +37,19 @@ const SideBar = ({ party }) => {
     currentTrack.addedBy.id === user.id;
 
   const { goToNextSong } = useAdminActions({ playlist, admin });
-  useGuestActions({ playlist, admin, userId: user?.id });
+  const { notOnPartyUrl } = useGuestActions({
+    playlist,
+    admin,
+    userId: user?.id,
+  });
 
   if (!playlist) {
     return null;
   }
+
+  const goToParty = () => {
+    window.location = currentTrack?.url;
+  };
 
   return (
     <div id={"side-bar-content"}>
@@ -51,6 +59,12 @@ const SideBar = ({ party }) => {
           Invitation link
           <input value={url} />
         </label>
+
+        {notOnPartyUrl && (
+          <button className="primary-button" onClick={goToParty}>
+            Go to party
+          </button>
+        )}
       </div>
 
       <UsersSection users={users} />

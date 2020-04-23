@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useTransition, animated } from "react-spring";
 import { useMutation } from "@apollo/client";
 import { REMOVE_TRACK, VOTE, REMOVE_VOTE } from "../../gql";
-import useAdminActions from "./useAdminActions";
 import { ToastsStore } from "react-toasts";
 
 const UpvoteButton = ({ votes, hasVoted, ...props }) => {

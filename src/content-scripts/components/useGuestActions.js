@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { useMutation } from "@apollo/client";
 import { UPDATE_PLAYLIST, ADD_TRACK } from "../../gql";
 import { ToastsStore } from "react-toasts";
@@ -13,9 +13,13 @@ const useGuestActions = ({ playlist, userId }) => {
     admin,
   } = playlist || {};
 
-  console.log({ playlist });
+  const currentTrack = tracks[currentIndex];
 
-  useAddHandlersToButtons({ id, userId });
+  const { notOnPartyUrl } = useAddHandlersToButtons({
+    id,
+    userId,
+    currentTrack,
+  });
 
   // update player to current playback state
   useEffect(() => {
@@ -45,6 +49,8 @@ const useGuestActions = ({ playlist, userId }) => {
       return () => video.removeEventListener("playing", updateToCurrentTime);
     }
   }, [currentSongPlaybackSecond, currentSongStartedTimestamp, admin]);
+
+  return { notOnPartyUrl };
 };
 
 const getNodeTrackTitle = (node) => {
@@ -77,7 +83,9 @@ const getNodeTrackUrl = (node) => {
   return null;
 };
 
-const useAddHandlersToButtons = ({ id, userId }) => {
+const useAddHandlersToButtons = ({ id, userId, currentTrack }) => {
+  const [notOnPartyUrl, setNotInParty] = useState();
+
   const [addTrack] = useMutation(ADD_TRACK, {
     onError: (error) => {
       console.log(error);
@@ -123,13 +131,19 @@ const useAddHandlersToButtons = ({ id, userId }) => {
     const observer = new MutationObserver(addListenersToRoot);
     const addListeners = () => {
       observer.observe(document.body, { childList: true, subtree: true });
+      const isNotInParty =
+        currentTrack?.url && window.location.href !== currentTrack.url;
+      setNotInParty(isNotInParty);
     };
     addListeners();
     addListenersToRoot();
+
     return () => {
       observer.disconnect();
     };
-  }, [addListenersToRoot]);
+  }, [addListenersToRoot, currentTrack]);
+
+  return { notOnPartyUrl };
 };
 
 let hasResized = false;
