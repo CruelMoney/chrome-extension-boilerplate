@@ -220,7 +220,8 @@ ytd-app {
     align-items: center;
     font-size: 1.2em;
     font-weight: 400;
-    margin-bottom: 1em;
+    margin-bottom: 15px;
+    min-height: 50px;
 
     > .row {
       position: relative;

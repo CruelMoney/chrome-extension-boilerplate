@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useTransition, animated } from "react-spring";
 import { useMutation } from "@apollo/client";
 import { REMOVE_TRACK, VOTE, REMOVE_VOTE } from "../../gql";
 
@@ -15,16 +16,35 @@ const UpvoteButton = ({ votes, hasVoted, ...props }) => {
 };
 
 const Tracks = ({ tracks, user, playlistId, admin }) => {
+  let fullHeight = 0;
+
+  const transitions = useTransition(
+    tracks.map((data) => {
+      return { ...data, y: (fullHeight += 65) - 65 };
+    }),
+    (d) => d.id,
+    {
+      from: { height: 0, opacity: 0 },
+      leave: { height: 0, opacity: 0 },
+      enter: ({ y }) => ({ y, height: 65, opacity: 1 }),
+      update: ({ y }) => ({ y, height: 65 }),
+    }
+  );
+
   return (
-    <ul>
-      {tracks.map((t) => (
-        <Track
-          key={t.id}
-          playlistId={playlistId}
-          user={user}
-          admin={admin}
-          {...t}
-        />
+    <ul style={{ height: fullHeight }}>
+      {transitions.map(({ item, props: { y, ...rest }, key }, index) => (
+        <animated.div
+          key={key}
+          style={{
+            position: "absolute",
+            zIndex: tracks.length - index,
+            transform: y.interpolate((y) => `translate3d(0,${y}px,0)`),
+            ...rest,
+          }}
+        >
+          <Track playlistId={playlistId} user={user} admin={admin} {...item} />
+        </animated.div>
       ))}
     </ul>
   );
