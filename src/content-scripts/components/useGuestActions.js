@@ -100,29 +100,34 @@ const useAddHandlersToButtons = ({ id, userId, currentTrack }) => {
     const nodes = document.querySelectorAll("#metadata");
 
     nodes.forEach((node) => {
-      let hasButton = node.querySelector(".add-track-button");
-      if (!hasButton) {
-        const button = document.createElement("button");
-        button.className = "add-track-button secondary-button";
-        button.innerText = "Add to party playlist";
-        node.appendChild(button);
-        hasButton = button;
-      }
       const url = getNodeTrackUrl(node);
-      const name = getNodeTrackTitle(node);
-      hasButton.onclick = (e) => {
-        e.preventDefault();
-        e.stopImmediatePropagation();
 
-        addTrack({
-          variables: {
-            id,
-            url,
-            name,
-            user: userId,
-          },
-        });
-      };
+      if (url) {
+        let hasButton = node.parentElement.querySelector(".add-track-button");
+        const name = getNodeTrackTitle(node);
+
+        if (!hasButton) {
+          const button = document.createElement("button");
+          button.className = "add-track-button secondary-button";
+          button.innerText = "Add to party playlist";
+          button.setAttribute("data-url", url);
+          node.parentElement.appendChild(button);
+          hasButton = button;
+        }
+        hasButton.onclick = (e) => {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+
+          addTrack({
+            variables: {
+              id,
+              url,
+              name,
+              user: userId,
+            },
+          });
+        };
+      }
     });
   }, [id, addTrack, userId]);
 

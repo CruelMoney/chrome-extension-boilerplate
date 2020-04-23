@@ -35,7 +35,6 @@ const onPartyJoined = async ({ payload, sendResponse, tabId }) => {
 
 const handleTabLoad = async ({ tabId, playlist }) => {
   if (partyTabId === tabId) {
-    handlePlaylistUpdate(playlist, tabId);
     changeTabTitle({ tabId });
   }
   if (!partyTabId) {
@@ -50,7 +49,6 @@ const handleTabLoad = async ({ tabId, playlist }) => {
       .subscribe({
         next: ({ data }) => {
           const playlist = data?.playlistUpdated;
-          console.log("Update from subscription");
           if (playlist) {
             handlePlaylistUpdate(playlist, tabId);
           }
@@ -64,7 +62,6 @@ const handlePlaylistUpdate = ({ tracks, currentIndex }, tabId) => {
   if (track) {
     chrome.tabs.query({ url: track.url }, (tabs) => {
       if (!tabs.length) {
-        console.log({ tracks, track, tabId, tabs, currentIndex });
         chrome.tabs.update(tabId, { url: track.url });
       }
     });

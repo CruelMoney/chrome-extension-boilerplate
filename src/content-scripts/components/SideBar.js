@@ -62,7 +62,7 @@ const SideBar = ({ party }) => {
 
         {notOnPartyUrl && (
           <button className="primary-button" onClick={goToParty}>
-            Go to party
+            Back to party
           </button>
         )}
       </div>
