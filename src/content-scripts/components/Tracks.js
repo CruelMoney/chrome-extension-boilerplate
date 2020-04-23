@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useTransition, animated } from "react-spring";
 import { useMutation } from "@apollo/client";
 import { REMOVE_TRACK, VOTE, REMOVE_VOTE } from "../../gql";
+import useAdminActions from "./useAdminActions";
 
 const UpvoteButton = ({ votes, hasVoted, ...props }) => {
   return (
@@ -112,16 +113,31 @@ const Track = ({
   );
 };
 
-export const CurrentTrack = ({ name, url, votes, hasVoted }) => {
+export const CurrentTrack = ({
+  skipSong,
+  name,
+  addedBy,
+  user,
+  url,
+  votes,
+  hasVoted,
+}) => {
   const thumbnail = `https://i.ytimg.com/vi/${url
     .split("watch?v=")
     .pop()}/default.jpg`;
 
+  const isOwn = addedBy && user && user.id === addedBy.id;
+
   return (
-    <div className={"row track"}>
+    <div className={"row track" + (isOwn ? " is-owner " : "")}>
       <div className="row">
         <img className="thumbnail" src={thumbnail}></img>
         <p>{name || url}</p>
+        <div className="remove-button-wrapper">
+          <button className="remove-button primary-button" onClick={skipSong}>
+            Skip
+          </button>
+        </div>
       </div>
       <UpvoteButton votes={votes} disabled hasVoted={hasVoted} />
     </div>

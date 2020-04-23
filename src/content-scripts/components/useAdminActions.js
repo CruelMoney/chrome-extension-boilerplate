@@ -3,7 +3,7 @@ import { useMutation } from "@apollo/client";
 import { UPDATE_PLAYLIST } from "../../gql";
 
 const useAdminActions = ({ playlist, admin }) => {
-  const [updatePlaylist, { error }] = useMutation(UPDATE_PLAYLIST);
+  const [updatePlaylist] = useMutation(UPDATE_PLAYLIST);
   const { id, currentIndex, currentSongStartedTimestamp, tracks } =
     playlist || {};
 
@@ -60,6 +60,8 @@ const useAdminActions = ({ playlist, admin }) => {
       }
     }
   }, [id, admin, updatePlayerState, goToNextSong]);
+
+  return { goToNextSong };
 };
 
 export default useAdminActions;

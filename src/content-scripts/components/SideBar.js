@@ -27,7 +27,7 @@ const SideBar = ({ party }) => {
   };
   const playlist = data?.playlist;
 
-  useAdminActions({ playlist, admin });
+  const { goToNextSong } = useAdminActions({ playlist, admin });
   useGuestActions({ playlist, admin, userId: user?.id });
 
   if (!playlist) {
@@ -54,7 +54,11 @@ const SideBar = ({ party }) => {
       {currentTrack && (
         <div className="section with-border ">
           <h2>Now playing:</h2>
-          <CurrentTrack {...currentTrack}></CurrentTrack>
+          <CurrentTrack
+            {...currentTrack}
+            skipSong={goToNextSong}
+            user={user}
+          ></CurrentTrack>
         </div>
       )}
 
